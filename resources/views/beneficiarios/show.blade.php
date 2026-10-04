@@ -8,10 +8,23 @@
         <h2 class="mb-0">{{ $beneficiario->nombres }} {{ $beneficiario->apellidos }}</h2>
         <span class="badge {{ $beneficiario->estado === 'activo' ? 'text-bg-success' : 'text-bg-secondary' }}">{{ ucfirst($beneficiario->estado) }}</span>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-wrap gap-2">
         <a href="{{ route('beneficiarios.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+        @if ($beneficiario->estado === 'activo' && $u->tienePermiso('ayudas.crear'))
+            <a href="{{ route('ayudas.create', ['beneficiario' => $beneficiario->id]) }}" class="btn btn-success"><i class="bi bi-box2-heart me-1"></i>Registrar ayuda</a>
+        @endif
+        @if ($beneficiario->estado === 'activo' && $u->tienePermiso('alimentos.crear'))
+            <a href="{{ route('alimentos.create', ['beneficiario' => $beneficiario->id]) }}" class="btn btn-info"><i class="bi bi-egg-fried me-1"></i>Registrar alimentos</a>
+        @endif
         @if ($u->tienePermiso('beneficiarios.editar'))
             <a href="{{ route('beneficiarios.edit', $beneficiario) }}" class="btn btn-warning"><i class="bi bi-pencil me-1"></i>Editar</a>
+        @endif
+        @if ($u->tienePermiso('beneficiarios.eliminar'))
+            <form method="POST" action="{{ route('beneficiarios.destroy', $beneficiario) }}"
+                  onsubmit="return confirm('¿Eliminar este beneficiario? Esta acción no se puede deshacer.')">
+                @csrf @method('DELETE')
+                <button class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
+            </form>
         @endif
     </div>
 </div>
@@ -71,11 +84,18 @@
                         <td>{{ $n->tipoAyuda->nombre }}</td>
                         <td>{{ $n->observacion ?: '—' }}</td>
                         <td><span class="badge {{ $n->estado === 'pendiente' ? 'text-bg-warning' : 'text-bg-success' }}">{{ ucfirst($n->estado) }}</span></td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             @if ($n->estado === 'pendiente' && $u->tienePermiso('tipos_ayuda.crear'))
-                                <form method="POST" action="{{ route('necesidades.atender', $n) }}">
+                                <form method="POST" action="{{ route('necesidades.atender', $n) }}" class="d-inline">
                                     @csrf @method('PATCH')
                                     <button class="btn btn-sm btn-outline-success">Marcar atendida</button>
+                                </form>
+                            @endif
+                            @if ($u->tienePermiso('necesidades.eliminar'))
+                                <form method="POST" action="{{ route('necesidades.destroy', $n) }}" class="d-inline"
+                                      onsubmit="return confirm('¿Eliminar esta necesidad?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
                                 </form>
                             @endif
                         </td>

@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('codigo', '500')
+@section('icono', 'bi-exclamation-triangle')
+@section('titulo', 'Algo salió mal')
+@section('mensaje', 'Ocurrió un error inesperado en el sistema. Inténtalo de nuevo; si continúa, avisa al administrador.')

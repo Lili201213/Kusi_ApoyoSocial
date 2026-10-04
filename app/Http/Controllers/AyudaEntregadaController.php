@@ -81,4 +81,12 @@ class AyudaEntregadaController extends Controller
 
         return redirect($destino)->with('exito', 'Ayuda registrada correctamente.');
     }
+
+    /** Eliminar una ayuda registrada por error */
+    public function destroy(AyudaEntregada $ayuda)
+    {
+        $ayuda->delete();
+
+        return back()->with('exito', 'Registro de ayuda eliminado.');
+    }
 }

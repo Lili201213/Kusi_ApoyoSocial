@@ -99,6 +99,31 @@ class BeneficiarioController extends Controller
         return back()->with('exito', 'Necesidad marcada como atendida.');
     }
 
+    /** Eliminar una necesidad registrada */
+    public function destroyNecesidad(NecesidadBeneficiario $necesidad)
+    {
+        $necesidad->delete();
+
+        return back()->with('exito', 'Necesidad eliminada.');
+    }
+
+    /** Eliminar: solo si no tiene historial. Si lo tiene, se recomienda desactivarlo. */
+    public function destroy(Beneficiario $beneficiario)
+    {
+        $ayudas = $beneficiario->ayudas()->count();
+        $entregas = $beneficiario->entregasAlimentos()->count();
+
+        if ($ayudas + $entregas > 0) {
+            return back()->with('error', "No se puede eliminar: tiene {$ayudas} ayuda(s) y {$entregas} entrega(s) de alimentos registradas. "
+                .'Para conservar su historial, márcalo como inactivo (botón Editar).');
+        }
+
+        $nombre = $beneficiario->nombres.' '.$beneficiario->apellidos;
+        $beneficiario->delete();
+
+        return redirect()->route('beneficiarios.index')->with('exito', "Beneficiario {$nombre} eliminado.");
+    }
+
     private function validar(Request $request, ?int $id = null): array
     {
         return $request->validate([

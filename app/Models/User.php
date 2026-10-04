@@ -18,7 +18,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
+            'password' => 'hashed',   // la contraseña se guarda siempre con hash (RNF04)
             'activo' => 'boolean',
         ];
     }

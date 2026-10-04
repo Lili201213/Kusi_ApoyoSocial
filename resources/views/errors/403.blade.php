@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('codigo', '403')
+@section('icono', 'bi-shield-lock')
+@section('titulo', 'Acceso no permitido')
+@section('mensaje', $exception->getMessage() ?: 'No tienes permiso para acceder a esta sección. Si lo necesitas, pídelo al administrador.')

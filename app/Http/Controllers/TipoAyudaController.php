@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NecesidadBeneficiario;
 use App\Models\TipoAyuda;
 use Illuminate\Http\Request;
 
@@ -36,5 +37,21 @@ class TipoAyudaController extends Controller
         $tipoAyuda->update(['activo' => ! $tipoAyuda->activo]);
 
         return back()->with('exito', 'Estado actualizado.');
+    }
+
+    /** Eliminar solo si nunca se usó; si se usó, hay que desactivarlo */
+    public function destroy(TipoAyuda $tipoAyuda)
+    {
+        $usos = $tipoAyuda->ayudas()->count()
+            + NecesidadBeneficiario::where('tipo_ayuda_id', $tipoAyuda->id)->count();
+
+        if ($usos > 0) {
+            return back()->with('error', "No se puede eliminar «{$tipoAyuda->nombre}»: está en uso ({$usos} registro(s)). "
+                .'Puedes desactivarlo para que no se ofrezca más.');
+        }
+
+        $tipoAyuda->delete();
+
+        return back()->with('exito', 'Tipo de ayuda eliminado.');
     }
 }

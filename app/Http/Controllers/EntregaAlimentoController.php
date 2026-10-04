@@ -90,4 +90,12 @@ class EntregaAlimentoController extends Controller
 
         return redirect($destino)->with('exito', 'Entrega registrada correctamente.');
     }
+
+    /** Eliminar una entrega registrada por error */
+    public function destroy(EntregaAlimento $entrega)
+    {
+        $entrega->delete();
+
+        return back()->with('exito', 'Registro de entrega eliminado.');
+    }
 }

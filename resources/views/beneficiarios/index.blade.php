@@ -53,6 +53,13 @@
                         @if ($u->tienePermiso('beneficiarios.editar'))
                             <a href="{{ route('beneficiarios.edit', $b) }}" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>
                         @endif
+                        @if ($u->tienePermiso('beneficiarios.eliminar'))
+                            <form method="POST" action="{{ route('beneficiarios.destroy', $b) }}" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar este beneficiario? Esta acción no se puede deshacer.')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @empty

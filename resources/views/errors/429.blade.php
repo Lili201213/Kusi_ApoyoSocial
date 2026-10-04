@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('codigo', '429')
+@section('icono', 'bi-speedometer')
+@section('titulo', 'Demasiadas solicitudes')
+@section('mensaje', 'Estás haciendo muchas solicitudes seguidas. Espera un momento e inténtalo de nuevo.')

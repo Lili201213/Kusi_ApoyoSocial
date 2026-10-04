@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('codigo', '419')
+@section('icono', 'bi-hourglass-split')
+@section('titulo', 'Tu sesión expiró')
+@section('mensaje', 'Pasó mucho tiempo sin actividad. Vuelve atrás, recarga la página e inténtalo otra vez.')
