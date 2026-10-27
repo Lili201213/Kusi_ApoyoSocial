@@ -23,16 +23,20 @@
         <div class="login-card">
             <img src="{{ asset('img/logo-icono.png') }}" alt="KUSI" height="72" class="mb-2 d-lg-none">
             <h1>¡Bienvenido/a!</h1>
-            <p class="text-muted mb-4">Ingresa con tu usuario y contraseña para continuar.</p>
+            <p class="text-muted mb-4">Ingresa con tu usuario o correo electrónico y tu contraseña para continuar.</p>
+
+            @if (session('exito'))
+                <div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i>{{ session('exito') }}</div>
+            @endif
 
             <form method="POST" action="{{ route('login.post') }}">
                 @csrf
                 <div class="mb-3">
-                    <label for="usuario" class="form-label">Usuario</label>
+                    <label for="usuario" class="form-label">Usuario o correo electrónico</label>
                     <div class="input-group has-validation">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
                         <input type="text" name="usuario" id="usuario" value="{{ old('usuario') }}" autocomplete="username"
-                               class="form-control @error('usuario') is-invalid @enderror" placeholder="Tu usuario" required autofocus>
+                               class="form-control @error('usuario') is-invalid @enderror" placeholder="admin o correo@gmail.com" required autofocus>
                         @error('usuario') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
@@ -48,9 +52,12 @@
                     </div>
                 </div>
 
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                    <label class="form-check-label" for="remember">Mantener mi sesión iniciada</label>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label" for="remember">Mantener mi sesión</label>
+                    </div>
+                    <a href="{{ route('password.request') }}" class="small fw-bold text-decoration-none">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <button class="btn btn-success w-100 login-btn"><i class="bi bi-box-arrow-in-right me-1"></i>Ingresar</button>

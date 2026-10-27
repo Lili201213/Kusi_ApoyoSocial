@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RecuperarClaveController;
 use App\Http\Controllers\AyudaEntregadaController;
 use App\Http\Controllers\BeneficiarioController;
 use App\Http\Controllers\CategoriaProductoController;
@@ -8,8 +9,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonacionController;
 use App\Http\Controllers\DonanteController;
 use App\Http\Controllers\EntregaAlimentoController;
-use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\EstadisticaController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\RolController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TipoAyudaController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
 
@@ -26,12 +29,36 @@ Route::get('/', fn () => redirect()->route('dashboard'));
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
+    // Recuperar contraseña por correo
+    Route::get('/olvide-mi-clave', [RecuperarClaveController::class, 'solicitar'])->name('password.request');
+    Route::post('/olvide-mi-clave', [RecuperarClaveController::class, 'enviar'])
+        ->middleware('throttle:5,1')->name('password.email');
+    Route::get('/restablecer-clave/{token}', [RecuperarClaveController::class, 'formulario'])->name('password.reset');
+    Route::post('/restablecer-clave', [RecuperarClaveController::class, 'actualizar'])
+        ->middleware('throttle:5,1')->name('password.update');
+});
+
+// Verificación de correo electrónico (requiere sesión iniciada, pero no estar verificado)
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', fn () => view('auth.verificar-correo'))
+        ->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('dashboard');
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'enlace-enviado');
+    })->middleware('throttle:6,1')->name('verification.send');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Zona protegida
-Route::middleware(['auth', UsuarioActivo::class])->group(function () {
+Route::middleware(['auth', 'verified', UsuarioActivo::class])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -171,9 +198,13 @@ Route::middleware(['auth', UsuarioActivo::class])->group(function () {
     Route::get('/estadisticas', [EstadisticaController::class, 'index'])
         ->middleware('permiso:estadisticas.ver')->name('estadisticas.index');
 
-    // ---------- Mi cuenta (cualquier usuario) ----------
-    Route::get('/cuenta', [CuentaController::class, 'edit'])->name('cuenta.edit');
-    Route::put('/cuenta', [CuentaController::class, 'update'])->name('cuenta.update');
+    // ---------- Mi perfil (cualquier usuario) ----------
+    Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
+    Route::put('/perfil/datos', [PerfilController::class, 'updateDatos'])->name('perfil.datos');
+    Route::put('/perfil/clave', [PerfilController::class, 'updateClave'])->name('perfil.clave');
+    Route::post('/perfil/foto', [PerfilController::class, 'updateFoto'])->name('perfil.foto');
+    Route::delete('/perfil/foto', [PerfilController::class, 'deleteFoto'])->name('perfil.foto.borrar');
+    Route::delete('/perfil', [PerfilController::class, 'destroy'])->name('perfil.eliminar');
 
     // ---------- Usuarios (RF16) ----------
     Route::get('/usuarios', [UsuarioController::class, 'index'])

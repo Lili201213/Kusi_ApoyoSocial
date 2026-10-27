@@ -11,6 +11,25 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ asset('css/kusi.css') }}?v={{ filemtime(public_path('css/kusi.css')) }}" rel="stylesheet">
+    <style>
+        /* Menú de perfil (arriba a la derecha) */
+        .perfil-toggle { background: transparent; border: 0; color: #fff; display: flex; align-items: center; gap: .6rem; padding: .25rem .5rem; border-radius: 14px; }
+        .perfil-toggle:hover, .perfil-toggle.show { background: rgba(255, 255, 255, .12); color: #fff; }
+        .topbar-avatar { width: 40px; height: 40px; border-radius: 50%; background: #b388eb; color: #fff; font-weight: 800;
+                         display: inline-flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .perfil-datos { line-height: 1.15; text-align: left; }
+        .perfil-datos .nombre { font-weight: 700; font-size: .95rem; display: block; }
+        .perfil-datos .rol { font-size: .75rem; color: rgba(255, 255, 255, .7); display: block; }
+        .perfil-menu { border: 0; border-radius: 16px; box-shadow: 0 12px 30px rgba(46, 26, 84, .25); padding: .5rem; min-width: 230px; }
+        .perfil-menu .dropdown-item { border-radius: 10px; padding: .55rem .8rem; font-weight: 600; color: #4b2a85; }
+        .perfil-menu .dropdown-item:hover { background: #efe7fa; color: #4b2a85; }
+        .perfil-menu .dropdown-item.salir { color: #b3261e; }
+        .perfil-menu .dropdown-item.salir:hover { background: #fdecea; color: #b3261e; }
+        .perfil-menu .cabecera { padding: .5rem .8rem .6rem; border-bottom: 1px solid #eee; margin-bottom: .4rem; }
+        .perfil-menu .cabecera .nombre { font-weight: 800; color: #4b2a85; }
+        .perfil-menu .cabecera .correo { font-size: .8rem; color: #777; word-break: break-all; }
+    </style>
     @stack('estilos')
 </head>
 <body>
@@ -19,45 +38,72 @@
     $fijo = request()->routeIs('dashboard'); // menú fijo solo en Inicio
     // [texto, icono, ruta o '#', permiso requerido]
     // Las rutas '#' se irán activando conforme construyamos cada módulo.
-    $menu = [
-        'General' => [
-            ['Inicio', 'bi-speedometer2', route('dashboard'), null],
-        ],
-        'Beneficiarios' => [
-            ['Beneficiarios', 'bi-people', route('beneficiarios.index'), 'beneficiarios.ver'],
-            ['Ayudas entregadas', 'bi-box2-heart', route('ayudas.index'), 'historial.ver'],
-            ['Alimentos / almuerzos', 'bi-egg-fried', route('alimentos.index'), 'historial.ver'],
-            ['Tipos de ayuda', 'bi-tags', route('tipos_ayuda.index'), 'tipos_ayuda.crear'],
-        ],
-        'Donaciones e inventario' => [
-            ['Donaciones', 'bi-gift', route('donaciones.index'), 'donaciones.ver'],
-            ['Donantes', 'bi-person-heart', route('donantes.index'), 'donaciones.ver'],
-            ['Inventario', 'bi-boxes', route('productos.index'), 'inventario.ver'],
-            ['Movimientos', 'bi-arrow-left-right', route('movimientos.index'), 'inventario.ver'],
-            ['Categorías', 'bi-tags', route('categorias.index'), 'productos.crear'],
-        ],
-        'Análisis' => [
-            ['Reportes', 'bi-file-earmark-text', route('reportes.index'), 'reportes.generar'],
-            ['Estadísticas', 'bi-bar-chart', route('estadisticas.index'), 'estadisticas.ver'],
-        ],
-        'Administración' => [
-            ['Usuarios', 'bi-person-gear', route('usuarios.index'), 'usuarios.gestionar'],
-            ['Roles y permisos', 'bi-shield-lock', route('roles.index'), 'roles.gestionar'],
-            ['Copias de seguridad', 'bi-database', route('respaldos.index'), 'usuarios.gestionar'],
-        ],
-    ];
+   $menu = [
+    'General' => [
+        ['Inicio', 'bi-speedometer2', route('dashboard'), null],
+    ],
+    'Beneficiarios' => [
+        ['Beneficiarios', 'bi-people', route('beneficiarios.index'), 'beneficiarios.ver'],
+        ['Ayudas entregadas', 'bi-box2-heart', route('ayudas.index'), 'historial.ver'],
+        ['Alimentos / almuerzos', 'bi-egg-fried', route('alimentos.index'), 'historial.ver'],
+        ['Tipos de ayuda', 'bi-list-check', route('tipos_ayuda.index'), 'tipos_ayuda.crear'],
+    ],
+    'Donaciones e inventario' => [
+        ['Donantes', 'bi-person-heart', route('donantes.index'), 'donaciones.ver'],
+        ['Donaciones', 'bi-gift', route('donaciones.index'), 'donaciones.ver'],
+        ['Inventario', 'bi-boxes', route('productos.index'), 'inventario.ver'],
+        ['Movimientos', 'bi-arrow-left-right', route('movimientos.index'), 'inventario.ver'],
+        ['Categorías', 'bi-tags', route('categorias.index'), 'productos.crear'],
+    ],
+    'Análisis' => [
+        ['Estadísticas', 'bi-bar-chart', route('estadisticas.index'), 'estadisticas.ver'],
+        ['Reportes', 'bi-file-earmark-text', route('reportes.index'), 'reportes.generar'],
+    ],
+    'Administración' => [
+        ['Usuarios', 'bi-person-gear', route('usuarios.index'), 'usuarios.gestionar'],
+        ['Roles y permisos', 'bi-shield-lock', route('roles.index'), 'roles.gestionar'],
+        ['Copias de seguridad', 'bi-database', route('respaldos.index'), 'usuarios.gestionar'],
+    ],
+];
 @endphp
 
-<nav class="navbar kusi-topbar {{ $fijo ? 'd-md-none' : '' }}">
+<nav class="navbar kusi-topbar">
     <div class="container-fluid">
-        <button class="btn btn-outline-light me-2" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-label="Abrir menú">
+        <button class="btn btn-outline-light me-2 {{ $fijo ? 'd-md-none' : '' }}" data-bs-toggle="offcanvas" data-bs-target="#menuLateral" aria-label="Abrir menú">
             <i class="bi bi-list fs-5"></i>
         </button>
-        <a href="{{ route('dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none me-auto">
+        <a href="{{ route('dashboard') }}" class="align-items-center gap-2 text-decoration-none {{ $fijo ? 'd-flex d-md-none' : 'd-flex' }}">
             <span class="brand-badge"><img src="{{ asset('img/logo-icono.png') }}" alt="KUSI"></span>
             <span class="brand-name">Kusi</span>
         </a>
-        <span class="text-white-50 small d-none d-sm-inline">{{ $u->name }}</span>
+
+        {{-- Perfil arriba a la derecha --}}
+        <div class="dropdown ms-auto">
+            <button class="perfil-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menú de perfil">
+                <span class="topbar-avatar">@if ($u->foto_url)<img src="{{ $u->foto_url }}" alt="">@else{{ $u->inicial }}@endif</span>
+                <span class="perfil-datos d-none d-sm-block">
+                    <span class="nombre">{{ $u->name }}</span>
+                    <span class="rol">{{ $u->rol->nombre ?? 'Sin rol' }}</span>
+                </span>
+                <i class="bi bi-chevron-down small"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end perfil-menu">
+                <li class="cabecera">
+                    <div class="nombre">{{ $u->name }}</div>
+                    <div class="correo">{{ $u->email }}</div>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ route('perfil.edit') }}"><i class="bi bi-person-circle me-2"></i>Mi perfil</a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="dropdown-item salir"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
@@ -91,20 +137,6 @@
                         @endif
                     @endforeach
                 </ul>
-
-                <div class="mt-auto pt-4">
-                    <div class="user-card d-flex align-items-center gap-2 mb-2">
-                        <span class="avatar">{{ mb_strtoupper(mb_substr($u->name, 0, 1)) }}</span>
-                        <div class="lh-sm overflow-hidden">
-                            <a href="{{ route('cuenta.edit') }}" title="Mi cuenta" class="d-block text-truncate">{{ $u->name }}</a>
-                            <span class="rol">{{ $u->rol->nombre ?? 'Sin rol' }}</span>
-                        </div>
-                    </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión</button>
-                    </form>
-                </div>
             </div>
         </div>
 

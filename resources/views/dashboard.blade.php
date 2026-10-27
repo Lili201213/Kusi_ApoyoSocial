@@ -6,21 +6,21 @@
     $u = auth()->user();
     $fmt = fn ($n) => \App\Services\InventarioService::fmt($n);
 
-    // [etiqueta, valor, icono, color, enlace]
+    // [etiqueta, valor, icono, color, enlace, clave de comparación]
     $tarjetas = [];
     if ($puede['benef']) {
-        $tarjetas[] = ['Beneficiarios activos', $kpi['benef'], 'bi-people', 'morado', route('beneficiarios.index', ['estado' => 'activo'])];
+        $tarjetas[] = ['Beneficiarios activos', $kpi['benef'], 'bi-people', 'morado', route('beneficiarios.index', ['estado' => 'activo']), null];
     }
     if ($puede['hist']) {
-        $tarjetas[] = ['Ayudas este mes', $kpi['ayudasMes'], 'bi-box2-heart', 'lavanda', route('ayudas.index')];
-        $tarjetas[] = ['Raciones este mes', $kpi['racionesMes'], 'bi-egg-fried', 'amarillo', route('alimentos.index')];
+        $tarjetas[] = ['Ayudas este mes', $kpi['ayudasMes'], 'bi-box2-heart', 'lavanda', route('ayudas.index'), 'ayudasMes'];
+        $tarjetas[] = ['Raciones este mes', $kpi['racionesMes'], 'bi-egg-fried', 'amarillo', route('alimentos.index'), 'racionesMes'];
     }
     if ($puede['don']) {
-        $tarjetas[] = ['Donaciones este mes', $kpi['donMes'], 'bi-gift', 'verde', route('donaciones.index')];
+        $tarjetas[] = ['Donaciones este mes', $kpi['donMes'], 'bi-gift', 'verde', route('donaciones.index'), 'donMes'];
     }
     if ($puede['inv']) {
-        $tarjetas[] = ['Productos en inventario', $kpi['productos'], 'bi-boxes', 'morado', route('productos.index')];
-        $tarjetas[] = ['Con stock bajo', $kpi['stockBajo'], 'bi-exclamation-triangle', $kpi['stockBajo'] > 0 ? 'rojo' : 'verde', route('productos.index', ['filtro' => 'bajo'])];
+        $tarjetas[] = ['Productos en inventario', $kpi['productos'], 'bi-boxes', 'morado', route('productos.index'), null];
+        $tarjetas[] = ['Con stock bajo', $kpi['stockBajo'], 'bi-exclamation-triangle', $kpi['stockBajo'] > 0 ? 'rojo' : 'verde', route('productos.index', ['filtro' => 'bajo']), null];
     }
 
     // Accesos rápidos según permisos: [texto, icono, ruta, permiso]
@@ -50,12 +50,21 @@
 {{-- Indicadores --}}
 @if (count($tarjetas))
 <div class="row row-cols-2 row-cols-lg-3 row-cols-xxl-6 g-3 mb-4">
-    @foreach ($tarjetas as [$etq, $valor, $icono, $color, $enlace])
+    @foreach ($tarjetas as [$etq, $valor, $icono, $color, $enlace, $clave])
+        @php $dif = $clave && isset($prev[$clave]) ? $valor - $prev[$clave] : null; @endphp
         <div class="col">
             <a href="{{ $enlace }}" class="kpi-card">
                 <div class="kpi-icon {{ $color }}"><i class="bi {{ $icono }}"></i></div>
                 <div class="kpi-num">{{ $valor }}</div>
                 <div class="kpi-label">{{ $etq }}</div>
+                @if ($dif !== null)
+                    <div class="small mt-1 {{ $dif > 0 ? 'text-success' : ($dif < 0 ? 'text-danger' : 'text-muted') }}">
+                        @if ($dif > 0) <i class="bi bi-caret-up-fill"></i> +{{ $dif }} vs. mes pasado
+                        @elseif ($dif < 0) <i class="bi bi-caret-down-fill"></i> {{ $dif }} vs. mes pasado
+                        @else <i class="bi bi-dash"></i> Igual que el mes pasado
+                        @endif
+                    </div>
+                @endif
             </a>
         </div>
     @endforeach
@@ -86,23 +95,24 @@
         </div>
         @endif
 
-        @if ($puede['hist'])
+        @if ($puede['hist'] || $puede['don'])
         <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-clock-history me-1"></i>Últimas ayudas entregadas</span>
-                <a href="{{ route('ayudas.index') }}" class="small fw-bold text-decoration-none">Ver todas</a>
-            </div>
-            @forelse ($ultAyudas as $a)
-                <div class="lista-item">
-                    <span class="ini">{{ mb_strtoupper(mb_substr($a->beneficiario->nombres, 0, 1).mb_substr($a->beneficiario->apellidos, 0, 1)) }}</span>
+            <div class="card-header"><i class="bi bi-clock-history me-1"></i>Actividad reciente</div>
+            @forelse ($actividad as $a)
+                <a href="{{ $a['enlace'] }}" class="lista-item text-decoration-none text-reset">
+                    @if ($a['tipo'] === 'ayuda')
+                        <span class="ini"><i class="bi bi-box2-heart"></i></span>
+                    @else
+                        <span class="ini" style="background:#E3F6EE;color:#1E8E63"><i class="bi bi-gift"></i></span>
+                    @endif
                     <div class="flex-grow-1">
-                        <div class="t">{{ $a->beneficiario->nombres }} {{ $a->beneficiario->apellidos }}</div>
-                        <div class="s">{{ $a->tipoAyuda->nombre }}{{ $a->descripcion ? ' · '.$a->descripcion : '' }}</div>
+                        <div class="t">{{ $a['titulo'] }}</div>
+                        <div class="s">{{ $a['detalle'] }}</div>
                     </div>
-                    <span class="s text-nowrap">{{ $a->fecha_entrega->format('d/m/Y') }}</span>
-                </div>
+                    <span class="s text-nowrap">{{ $a['fecha']->format('d/m/Y') }}</span>
+                </a>
             @empty
-                <div class="vacio"><i class="bi bi-box2-heart"></i>Aún no hay ayudas registradas.</div>
+                <div class="vacio"><i class="bi bi-clock-history"></i>Aún no hay actividad registrada.</div>
             @endforelse
         </div>
         @endif
@@ -132,10 +142,15 @@
         @endif
 
         @if ($puede['inv'])
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="bi bi-exclamation-triangle me-1"></i>Productos con stock bajo</span>
-                <a href="{{ route('productos.index', ['filtro' => 'bajo']) }}" class="small fw-bold text-decoration-none">Ver</a>
+                <span class="d-flex gap-2 align-items-center">
+                    @if ($u->tienePermiso('inventario.entrada'))
+                        <a href="{{ route('movimientos.entrada') }}" class="btn btn-sm btn-outline-primary py-0">Registrar entrada</a>
+                    @endif
+                    <a href="{{ route('productos.index', ['filtro' => 'bajo']) }}" class="small fw-bold text-decoration-none">Ver</a>
+                </span>
             </div>
             @forelse ($stockBajo as $p)
                 <a href="{{ route('productos.show', $p) }}" class="lista-item text-decoration-none text-reset">
@@ -145,27 +160,6 @@
                 </a>
             @empty
                 <div class="vacio"><i class="bi bi-check2-circle"></i>Todo el inventario está en niveles normales.</div>
-            @endforelse
-        </div>
-        @endif
-
-        @if ($puede['don'])
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-gift me-1"></i>Últimas donaciones</span>
-                <a href="{{ route('donaciones.index') }}" class="small fw-bold text-decoration-none">Ver todas</a>
-            </div>
-            @forelse ($ultDonaciones as $d)
-                <a href="{{ route('donaciones.show', $d) }}" class="lista-item text-decoration-none text-reset">
-                    <span class="ini" style="background:#E3F6EE;color:#1E8E63"><i class="bi bi-gift"></i></span>
-                    <div class="flex-grow-1">
-                        <div class="t">{{ $d->donante->nombre_razon_social }}</div>
-                        <div class="s">{{ $d->detalles_count }} producto(s){{ $d->estaAnulada() ? ' · Anulada' : '' }}</div>
-                    </div>
-                    <span class="s text-nowrap">{{ $d->fecha_donacion->format('d/m/Y') }}</span>
-                </a>
-            @empty
-                <div class="vacio"><i class="bi bi-gift"></i>Aún no hay donaciones registradas.</div>
             @endforelse
         </div>
         @endif

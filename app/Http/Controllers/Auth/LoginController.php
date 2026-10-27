@@ -14,28 +14,36 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-{
-    $credenciales = $request->validate([
-        'usuario' => ['required', 'string'],
-        'password' => ['required'],
-    ], [
-        'usuario.required' => 'Ingresa tu usuario.',
-        'password.required' => 'Ingresa tu contraseña.',
-    ]);
+    {
+        $request->validate([
+            'usuario' => ['required', 'string'],
+            'password' => ['required'],
+        ], [
+            'usuario.required' => 'Ingresa tu usuario o correo electrónico.',
+            'password.required' => 'Ingresa tu contraseña.',
+        ]);
 
-    // Solo pueden entrar usuarios activos
-    $credenciales['activo'] = true;
+        $identificador = trim($request->input('usuario'));
 
-    if (Auth::attempt($credenciales, $request->boolean('remember'))) {
-        $request->session()->regenerate();
+        // Si parece un correo, busca por email; si no, por nombre de usuario
+        $campo = filter_var($identificador, FILTER_VALIDATE_EMAIL) ? 'email' : 'usuario';
 
-        return redirect()->intended(route('dashboard'));
+        $credenciales = [
+            $campo => $identificador,
+            'password' => $request->input('password'),
+            'activo' => true, // solo pueden entrar usuarios activos
+        ];
+
+        if (Auth::attempt($credenciales, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard'));
+        }
+
+        return back()
+            ->withErrors(['usuario' => 'Usuario/correo o contraseña incorrectos, o el usuario está inactivo.'])
+            ->onlyInput('usuario');
     }
-
-    return back()
-        ->withErrors(['usuario' => 'Usuario o contraseña incorrectos, o el usuario está inactivo.'])
-        ->onlyInput('usuario');
-}
 
     public function logout(Request $request)
     {

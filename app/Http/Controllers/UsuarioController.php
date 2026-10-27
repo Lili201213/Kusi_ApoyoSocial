@@ -49,9 +49,21 @@ class UsuarioController extends Controller
         $request->merge(['activo' => $request->boolean('activo')]);
         $datos = $this->validar($request);
 
-        User::create($datos); // la contraseña se guarda con hash por el cast del modelo
+        $usuario = User::create($datos); // la contraseña se guarda con hash por el cast del modelo
 
-        return redirect()->route('usuarios.index')->with('exito', 'Usuario registrado correctamente.');
+        // Enlace para que el nuevo usuario verifique su correo
+        try {
+            $usuario->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()->route('usuarios.index')
+                ->with('exito', 'Usuario registrado correctamente.')
+                ->with('error', 'No se pudo enviar el correo de verificación a '.$usuario->email.'. Revisa la configuración de correo; el usuario puede pedir el enlace al iniciar sesión.');
+        }
+
+        return redirect()->route('usuarios.index')
+            ->with('exito', 'Usuario registrado correctamente. Se envió un enlace de verificación a '.$usuario->email.'.');
     }
 
     public function edit(Request $request, User $usuario)
@@ -86,9 +98,42 @@ class UsuarioController extends Controller
             unset($datos['password']); // no cambiar la contraseña si se deja vacía
         }
 
-        $usuario->update($datos);
+        $cambiaCorreo = $usuario->email !== $datos['email'];
+        $falloCorreo = false;
 
-        return redirect()->route('usuarios.index')->with('exito', 'Usuario actualizado correctamente.');
+        try {
+            // Si cambia el correo, el modelo lo marca como no verificado y envía el enlace
+            $usuario->update($datos);
+        } catch (\Throwable $e) {
+            // Si solo falló el envío del correo, los datos ya quedaron guardados
+            if (! $cambiaCorreo || $usuario->fresh()->email !== $datos['email']) {
+                throw $e;
+            }
+            report($e);
+            $falloCorreo = true;
+        }
+
+        // Si el administrador cambió su propio correo, debe verificarlo antes de seguir
+        if ($esPropio && $cambiaCorreo) {
+            $respuesta = redirect()->route('verification.notice');
+
+            return $falloCorreo
+                ? $respuesta->with('error', 'Se guardó tu nuevo correo, pero no se pudo enviar el enlace. Pulsa "Reenviar enlace".')
+                : $respuesta->with('status', 'enlace-enviado');
+        }
+
+        $mensaje = 'Usuario actualizado correctamente.';
+        if ($cambiaCorreo && ! $falloCorreo) {
+            $mensaje .= ' Se envió un enlace de verificación al nuevo correo.';
+        }
+
+        $respuesta = redirect()->route('usuarios.index')->with('exito', $mensaje);
+
+        if ($falloCorreo) {
+            $respuesta->with('error', 'No se pudo enviar el correo de verificación. Revisa la configuración de correo.');
+        }
+
+        return $respuesta;
     }
 
     /** Los usuarios no se eliminan: se activan o desactivan */
@@ -122,7 +167,7 @@ class UsuarioController extends Controller
         return $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'usuario' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-z0-9._-]+$/', Rule::unique('users', 'usuario')->ignore($id)],
-            'email' => ['nullable', 'email', 'max:150', Rule::unique('users', 'email')->ignore($id)],
+            'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($id)],
             'rol_id' => ['required', 'exists:roles,id'],
             'activo' => ['boolean'],
             'password' => [$id ? 'nullable' : 'required', 'confirmed', Password::min(8)->letters()->numbers()],
@@ -132,6 +177,7 @@ class UsuarioController extends Controller
             'usuario.min' => 'El usuario debe tener al menos 3 caracteres.',
             'usuario.regex' => 'El usuario solo puede tener letras, números, punto, guion y guion bajo (sin espacios).',
             'usuario.unique' => 'Ese nombre de usuario ya está en uso.',
+            'email.required' => 'El correo es obligatorio: se usa para recuperar la contraseña.',
             'email.email' => 'El correo no tiene un formato válido.',
             'email.unique' => 'Ese correo ya está registrado.',
             'rol_id.required' => 'Selecciona un rol.',

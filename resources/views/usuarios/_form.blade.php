@@ -13,8 +13,9 @@
         @error('usuario') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label">Correo (opcional)</label>
-        <input type="email" name="email" value="{{ $campo('email') }}" class="form-control @error('email') is-invalid @enderror">
+        <label class="form-label">Correo electrónico *</label>
+        <input type="email" name="email" value="{{ $campo('email') }}" class="form-control @error('email') is-invalid @enderror" required>
+        <div class="form-text">Se usa para recuperar la contraseña.</div>
         @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-6">
