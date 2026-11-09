@@ -22,6 +22,7 @@ use App\Http\Controllers\TipoAyudaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Auth\RegistroController;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
 
@@ -29,6 +30,10 @@ Route::get('/', fn () => redirect()->route('dashboard'));
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+        // Crear cuenta (registro público)
+    Route::get('/register', [RegistroController::class, 'create'])->name('register');
+    Route::post('/register', [RegistroController::class, 'store'])
+        ->middleware('throttle:5,1')->name('register.store');
 
     // Recuperar contraseña por correo
     Route::get('/olvide-mi-clave', [RecuperarClaveController::class, 'solicitar'])->name('password.request');

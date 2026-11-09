@@ -62,6 +62,10 @@
 
                 <button class="btn btn-success w-100 login-btn"><i class="bi bi-box-arrow-in-right me-1"></i>Ingresar</button>
             </form>
+                        <p class="text-center small mt-3 mb-0">
+                ¿No tienes cuenta?
+                <a href="{{ route('register') }}" class="fw-bold text-decoration-none">Crear cuenta</a>
+            </p>
 
             <p class="text-center text-muted small mt-4 mb-0">© {{ date('Y') }} Sociedad de Apoyo Social KUSI</p>
         </div>
