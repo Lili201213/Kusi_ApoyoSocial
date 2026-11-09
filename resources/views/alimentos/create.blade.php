@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Registrar entrega de alimentos')
+<x-layout>
+    <x-slot:title>Registrar entrega de alimentos</x-slot>
 
-@section('contenido')
 <h2 class="mb-3">Registrar entrega de alimentos / almuerzos</h2>
 <div class="card shadow-sm"><div class="card-body">
     <form method="POST" action="{{ route('alimentos.store') }}">
@@ -45,4 +44,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

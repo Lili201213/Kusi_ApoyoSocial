@@ -1,6 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Editar donante')
-@section('contenido')
+<x-layout>
+    <x-slot:title>Editar donante</x-slot>
+
 <h2 class="mb-3">Editar donante</h2>
 <div class="card shadow-sm"><div class="card-body">
     <form method="POST" action="{{ route('donantes.update', $donante) }}">
@@ -12,4 +12,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

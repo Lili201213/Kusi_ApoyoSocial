@@ -1,7 +1,6 @@
-@extends('auth.base')
-@section('titulo', 'Recuperar contraseña')
+<x-auth-layout>
+    <x-slot:title>Recuperar contraseña</x-slot>
 
-@section('formulario')
     <h1>¿Olvidaste tu contraseña?</h1>
     <p class="text-muted mb-4">No te preocupes. Escribe el correo registrado en tu cuenta y te enviaremos un enlace para crear una contraseña nueva.</p>
 
@@ -26,4 +25,4 @@
     <div class="text-center mt-4">
         <a href="{{ route('login') }}" class="text-decoration-none fw-bold"><i class="bi bi-arrow-left me-1"></i>Volver al inicio de sesión</a>
     </div>
-@endsection
+</x-auth-layout>

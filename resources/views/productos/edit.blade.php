@@ -1,6 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Editar producto')
-@section('contenido')
+<x-layout>
+    <x-slot:title>Editar producto</x-slot>
+
 <h2 class="mb-1">Editar producto</h2>
 <p class="text-muted">El stock no se edita aquí: cambia solo con entradas y salidas.</p>
 <div class="card shadow-sm"><div class="card-body">
@@ -13,4 +13,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

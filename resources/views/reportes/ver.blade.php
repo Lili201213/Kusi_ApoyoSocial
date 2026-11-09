@@ -1,5 +1,5 @@
-@extends('layouts.app')
-@section('titulo', $titulo)
+<x-layout>
+    <x-slot:title>{{ $titulo }}</x-slot>
 
 @push('estilos')
 <style>
@@ -16,7 +16,6 @@
 </style>
 @endpush
 
-@section('contenido')
 @php
     $q = request()->getQueryString();
     $tiene = fn ($c) => in_array($c, $campos, true);
@@ -128,4 +127,4 @@
     </div>
 </div>
 <div class="text-muted small mt-2">{{ count($filas) }} registro(s)</div>
-@endsection
+</x-layout>

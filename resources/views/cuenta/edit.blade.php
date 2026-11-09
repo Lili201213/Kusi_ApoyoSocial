@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Mi cuenta')
+<x-layout>
+    <x-slot:title>Mi cuenta</x-slot>
 
-@section('contenido')
 @php $u = auth()->user(); @endphp
 <h2 class="mb-3">Mi cuenta</h2>
 <div class="row g-3">
@@ -36,4 +35,4 @@
             </form>
         </div></div></div>
 </div>
-@endsection
+</x-layout>

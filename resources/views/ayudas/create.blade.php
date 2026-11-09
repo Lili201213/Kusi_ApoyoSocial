@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Registrar ayuda')
+<x-layout>
+    <x-slot:title>Registrar ayuda</x-slot>
 
-@section('contenido')
 <h2 class="mb-3">Registrar ayuda entregada</h2>
 <div class="card shadow-sm"><div class="card-body">
     <form method="POST" action="{{ route('ayudas.store') }}">
@@ -46,4 +45,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

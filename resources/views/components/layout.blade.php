@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('titulo', 'Inicio') - KUSI</title>
+    <title>{{ filled($title ?? null) ? trim((string) $title) : 'Inicio' }} - KUSI</title>
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,7 +149,7 @@
                 <div class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-exclamation-circle me-1"></i>{{ session('error') }}
                     <button class="btn-close" data-bs-dismiss="alert"></button></div>
             @endif
-            @yield('contenido')
+            {{ $slot }}
             <div class="kusi-footer no-print">© {{ date('Y') }} Sociedad de Apoyo Social KUSI · Hecho con cariño para ayudar</div>
         </main>
     </div>

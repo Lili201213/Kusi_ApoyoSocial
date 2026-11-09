@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Copias de seguridad')
+<x-layout>
+    <x-slot:title>Copias de seguridad</x-slot>
 
-@section('contenido')
 <h2 class="mb-1">Copias de seguridad</h2>
 <p class="text-muted">Descarga una copia completa de la información del sistema (base de datos <code>{{ $baseDatos }}</code>).</p>
 
@@ -44,4 +43,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-layout>

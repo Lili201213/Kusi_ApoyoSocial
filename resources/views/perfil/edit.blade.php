@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Mi perfil')
+<x-layout>
+    <x-slot:title>Mi perfil</x-slot>
 
-@section('contenido')
 @php $u = auth()->user(); @endphp
 <h2 class="mb-3">Mi perfil</h2>
 
@@ -149,4 +148,4 @@
         @endif
     </div>
 </div>
-@endsection
+</x-layout>

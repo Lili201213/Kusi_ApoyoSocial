@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Tipos de ayuda')
+<x-layout>
+    <x-slot:title>Tipos de ayuda</x-slot>
 
-@section('contenido')
 <h2 class="mb-3">Tipos de ayuda</h2>
 
 <div class="card shadow-sm mb-4">
@@ -54,4 +53,4 @@
         </table>
     </div>
 </div>
-@endsection
+</x-layout>

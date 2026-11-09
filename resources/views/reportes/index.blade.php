@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Reportes')
+<x-layout>
+    <x-slot:title>Reportes</x-slot>
 
-@section('contenido')
 @php
     $reportes = [
         ['beneficiarios', 'bi-people', 'Beneficiarios', 'Listado de beneficiarios con su estado, edad y datos de contacto.'],
@@ -29,4 +28,4 @@
         </div>
     @endforeach
 </div>
-@endsection
+</x-layout>

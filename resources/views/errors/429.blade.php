@@ -1,5 +1,5 @@
-@extends('errors.layout')
-@section('codigo', '429')
-@section('icono', 'bi-speedometer')
-@section('titulo', 'Demasiadas solicitudes')
-@section('mensaje', 'Estás haciendo muchas solicitudes seguidas. Espera un momento e inténtalo de nuevo.')
+<x-error-layout
+    codigo="429"
+    icono="bi-speedometer"
+    titulo="Demasiadas solicitudes"
+    mensaje="Estás haciendo muchas solicitudes seguidas. Espera un momento e inténtalo de nuevo." />

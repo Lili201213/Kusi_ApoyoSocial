@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Donación #'.$donacion->id)
+<x-layout>
+    <x-slot:title>Donación #{{ $donacion->id }}</x-slot>
 
-@section('contenido')
 @php $u = auth()->user(); $fmt = fn ($n) => \App\Services\InventarioService::fmt($n); @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
@@ -60,4 +59,4 @@
     </div>
 </div>
 @endif
-@endsection
+</x-layout>

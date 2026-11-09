@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Categorías de producto')
+<x-layout>
+    <x-slot:title>Categorías de producto</x-slot>
 
-@section('contenido')
 <h2 class="mb-3">Categorías de producto</h2>
 <div class="card shadow-sm mb-4"><div class="card-body">
     <form method="POST" action="{{ route('categorias.store') }}" class="row g-2">
@@ -39,4 +38,4 @@
         </table>
     </div>
 </div>
-@endsection
+</x-layout>

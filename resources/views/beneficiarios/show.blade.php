@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', $beneficiario->nombres.' '.$beneficiario->apellidos)
+<x-layout>
+    <x-slot:title>{{ $beneficiario->nombres }} {{ $beneficiario->apellidos }}</x-slot>
 
-@section('contenido')
 @php $u = auth()->user(); @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
@@ -153,4 +152,4 @@
     </div>
 </div>
 @endif
-@endsection
+</x-layout>

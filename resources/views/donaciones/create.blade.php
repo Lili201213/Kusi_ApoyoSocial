@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Registrar donación')
+<x-layout>
+    <x-slot:title>Registrar donación</x-slot>
 
-@section('contenido')
 @php
     $fmt = fn ($n) => \App\Services\InventarioService::fmt($n);
     $items = old('items', [['producto_id' => '', 'cantidad' => '']]);
@@ -70,7 +69,6 @@
         <a href="{{ route('donaciones.index') }}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>
-@endsection
 
 @push('scripts')
 <script>
@@ -96,3 +94,4 @@
     })();
 </script>
 @endpush
+</x-layout>

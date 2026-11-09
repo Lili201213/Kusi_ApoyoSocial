@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Inicio')
+<x-layout>
+    <x-slot:title>Inicio</x-slot>
 
-@section('contenido')
 @php
     $u = auth()->user();
     $fmt = fn ($n) => \App\Services\InventarioService::fmt($n);
@@ -165,7 +164,6 @@
         @endif
     </div>
 </div>
-@endsection
 
 @if ($serie)
 @push('scripts')
@@ -184,3 +182,4 @@
 </script>
 @endpush
 @endif
+</x-layout>

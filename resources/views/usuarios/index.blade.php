@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Usuarios')
+<x-layout>
+    <x-slot:title>Usuarios</x-slot>
 
-@section('contenido')
 @php $yo = auth()->user(); @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h2 class="mb-0">Usuarios</h2>
@@ -61,4 +60,4 @@
     </div>
 </div>
 <div class="mt-3">{{ $usuarios->links('pagination::bootstrap-5') }}</div>
-@endsection
+</x-layout>

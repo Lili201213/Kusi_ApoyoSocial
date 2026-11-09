@@ -1,6 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Nuevo usuario')
-@section('contenido')
+<x-layout>
+    <x-slot:title>Nuevo usuario</x-slot>
+
 <h2 class="mb-3">Registrar usuario</h2>
 <div class="card shadow-sm"><div class="card-body">
     <form method="POST" action="{{ route('usuarios.store') }}" autocomplete="off">
@@ -12,4 +12,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

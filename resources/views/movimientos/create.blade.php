@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', $tipo === 'entrada' ? 'Registrar entrada' : 'Registrar salida')
+<x-layout>
+    <x-slot:title>{{ $tipo === 'entrada' ? 'Registrar entrada' : 'Registrar salida' }}</x-slot>
 
-@section('contenido')
 @php $fmt = fn ($n) => \App\Services\InventarioService::fmt($n); @endphp
 <h2 class="mb-3">{{ $tipo === 'entrada' ? 'Registrar entrada de producto' : 'Registrar salida de producto' }}</h2>
 <div class="card shadow-sm"><div class="card-body">
@@ -46,4 +45,4 @@
         </div>
     </form>
 </div></div>
-@endsection
+</x-layout>

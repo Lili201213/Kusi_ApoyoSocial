@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Roles y permisos')
+<x-layout>
+    <x-slot:title>Roles y permisos</x-slot>
 
-@section('contenido')
 <h2 class="mb-1">Roles y permisos</h2>
 <p class="text-muted">Marca qué puede hacer cada rol. Los cambios se aplican de inmediato a todos los usuarios de ese rol.</p>
 
@@ -51,4 +50,4 @@
     </div>
     <button class="btn btn-success"><i class="bi bi-check-lg me-1"></i>Guardar permisos</button>
 </form>
-@endsection
+</x-layout>

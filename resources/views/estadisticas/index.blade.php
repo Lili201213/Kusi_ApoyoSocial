@@ -1,7 +1,6 @@
-@extends('layouts.app')
-@section('titulo', 'Estadísticas')
+<x-layout>
+    <x-slot:title>Estadísticas</x-slot>
 
-@section('contenido')
 @php $fmt = fn ($n) => \App\Services\InventarioService::fmt($n); @endphp
 <h2 class="mb-3">Estadísticas</h2>
 
@@ -71,7 +70,6 @@
             @endforelse
         </ul></div></div>
 </div>
-@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -105,3 +103,4 @@
     dona('gSexo', d.sexoNombres, d.sexoTotales);
 </script>
 @endpush
+</x-layout>

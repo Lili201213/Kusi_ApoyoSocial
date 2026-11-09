@@ -1,7 +1,6 @@
-@extends('auth.base')
-@section('titulo', 'Nueva contraseña')
+<x-auth-layout>
+    <x-slot:title>Nueva contraseña</x-slot>
 
-@section('formulario')
     <h1>Crea tu nueva contraseña</h1>
     <p class="text-muted mb-4">Elige una contraseña segura: mínimo 8 caracteres, con letras y números.</p>
 
@@ -43,4 +42,4 @@
     <div class="text-center mt-4">
         <a href="{{ route('login') }}" class="text-decoration-none fw-bold"><i class="bi bi-arrow-left me-1"></i>Volver al inicio de sesión</a>
     </div>
-@endsection
+</x-auth-layout>
