@@ -19,8 +19,8 @@ class LoginController extends Controller
             'usuario' => ['required', 'string'],
             'password' => ['required'],
         ], [
-            'usuario.required' => 'Ingresa tu usuario o correo electrónico.',
-            'password.required' => 'Ingresa tu contraseña.',
+            'usuario.required' => __('Ingresa tu usuario o correo electrónico.'),
+            'password.required' => __('Ingresa tu contraseña.'),
         ]);
 
         $identificador = trim($request->input('usuario'));
@@ -41,7 +41,7 @@ class LoginController extends Controller
         }
 
         return back()
-            ->withErrors(['usuario' => 'Usuario/correo o contraseña incorrectos, o el usuario está inactivo.'])
+            ->withErrors(['usuario' => __('Usuario/correo o contraseña incorrectos, o el usuario está inactivo.')])
             ->onlyInput('usuario');
     }
 

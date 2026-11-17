@@ -36,7 +36,12 @@ class InventarioService
 
             if ($tipo === 'salida' && $actual < $cantidad) {
                 throw new StockInsuficienteException(
-                    "Stock insuficiente de «{$producto->nombre}»: hay ".self::fmt($actual)." {$producto->unidad_medida} y se necesitan ".self::fmt($cantidad).'.'
+                    __("Stock insuficiente de «:nombre»: hay :actual :unidad y se necesitan :cantidad.", [
+                        'nombre' => $producto->nombre,
+                        'actual' => self::fmt($actual),
+                        'unidad' => $producto->unidad_medida,
+                        'cantidad' => self::fmt($cantidad),
+                    ])
                 );
             }
 

@@ -24,12 +24,12 @@ class AppServiceProvider extends ServiceProvider
         // Correo de verificación de correo electrónico, en español y con la marca de KUSI
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
             return (new MailMessage)
-                ->subject('Verifica tu correo electrónico - KUSI')
-                ->greeting('¡Hola, ' . $notifiable->name . '!')
-                ->line('Haz clic en el botón para confirmar que este correo te pertenece y activar tu cuenta.')
-                ->action('Verificar correo', $url)
-                ->line('Si no solicitaste esto, puedes ignorar este mensaje.')
-                ->salutation('Sociedad de Apoyo Social KUSI');
+                ->subject(__('Verifica tu correo electrónico - KUSI'))
+                ->greeting(__('¡Hola, :nombre!', ['nombre' => $notifiable->name]))
+                ->line(__('Haz clic en el botón para confirmar que este correo te pertenece y activar tu cuenta.'))
+                ->action(__('Verificar correo'), $url)
+                ->line(__('Si no solicitaste esto, puedes ignorar este mensaje.'))
+                ->salutation(__('Sociedad de Apoyo Social KUSI'));
         });
     }
 }

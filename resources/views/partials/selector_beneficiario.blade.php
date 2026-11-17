@@ -1,7 +1,7 @@
-<label class="form-label">Beneficiario *</label>
-<input type="text" id="filtroBenef" class="form-control mb-1" placeholder="Escribe DNI, nombre o apellido para filtrar la lista...">
+<label class="form-label">{{ __('Beneficiario') }} *</label>
+<input type="text" id="filtroBenef" class="form-control mb-1" placeholder="{{ __('Escribe DNI, nombre o apellido para filtrar la lista...') }}">
 <select name="beneficiario_id" id="selBenef" class="form-select @error('beneficiario_id') is-invalid @enderror" required>
-    <option value="">— Seleccionar beneficiario —</option>
+    <option value="">— {{ __('Seleccionar beneficiario') }} —</option>
     @foreach ($beneficiarios as $b)
         <option value="{{ $b->id }}"
                 data-texto="{{ mb_strtolower($b->dni.' '.$b->apellidos.' '.$b->nombres) }}"

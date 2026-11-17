@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DonacionRegistrada;
 use App\Exceptions\StockInsuficienteException;
 use App\Models\Donacion;
 use App\Models\Donante;
@@ -53,14 +54,14 @@ class DonacionController extends Controller
             'items.*.producto_id' => ['required', 'distinct', Rule::exists('productos', 'id')->where('activo', true)],
             'items.*.cantidad' => ['required', 'numeric', 'min:0.01', 'max:999999'],
         ], [
-            'donante_id.required' => 'Selecciona el donante.',
-            'fecha_donacion.before_or_equal' => 'La fecha no puede ser futura.',
-            'items.required' => 'Agrega al menos un producto.',
-            'items.*.producto_id.required' => 'Selecciona el producto en todas las filas.',
-            'items.*.producto_id.distinct' => 'No repitas el mismo producto: suma las cantidades en una sola fila.',
-            'items.*.producto_id.exists' => 'Hay un producto que no existe o está inactivo.',
-            'items.*.cantidad.required' => 'Indica la cantidad en todas las filas.',
-            'items.*.cantidad.min' => 'Las cantidades deben ser mayores que 0.',
+            'donante_id.required' => __('Selecciona el donante.'),
+            'fecha_donacion.before_or_equal' => __('La fecha no puede ser futura.'),
+            'items.required' => __('Agrega al menos un producto.'),
+            'items.*.producto_id.required' => __('Selecciona el producto en todas las filas.'),
+            'items.*.producto_id.distinct' => __('No repitas el mismo producto: suma las cantidades en una sola fila.'),
+            'items.*.producto_id.exists' => __('Hay un producto que no existe o está inactivo.'),
+            'items.*.cantidad.required' => __('Indica la cantidad en todas las filas.'),
+            'items.*.cantidad.min' => __('Las cantidades deben ser mayores que 0.'),
         ]);
 
         $donacion = DB::transaction(function () use ($datos, $request) {
@@ -88,8 +89,15 @@ class DonacionController extends Controller
             return $donacion;
         });
 
+        // Avisa en vivo a la página pública (si Reverb está apagado, el registro NO debe fallar)
+        try {
+            DonacionRegistrada::dispatch();
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return redirect()->route('donaciones.show', $donacion)
-            ->with('exito', 'Donación registrada y stock actualizado.');
+            ->with('exito', __('Donación registrada y stock actualizado.'));
     }
 
     public function show(Donacion $donacion)
@@ -104,7 +112,7 @@ class DonacionController extends Controller
     {
         $datos = $request->validate([
             'motivo_anulacion' => ['required', 'string', 'max:255'],
-        ], ['motivo_anulacion.required' => 'Indica el motivo de la anulación.']);
+        ], ['motivo_anulacion.required' => __('Indica el motivo de la anulación.')]);
 
         try {
             $hecho = DB::transaction(function () use ($donacion, $datos, $request) {
@@ -132,11 +140,11 @@ class DonacionController extends Controller
                 return true;
             });
         } catch (StockInsuficienteException $e) {
-            return back()->with('error', 'No se puede anular: '.$e->getMessage().' Parte de lo donado ya salió del inventario.');
+            return back()->with('error', __('No se puede anular: :mensaje Parte de lo donado ya salió del inventario.', ['mensaje' => $e->getMessage()]));
         }
 
         return $hecho
-            ? back()->with('exito', 'Donación anulada y stock revertido.')
-            : back()->with('error', 'La donación ya estaba anulada.');
+            ? back()->with('exito', __('Donación anulada y stock revertido.'))
+            : back()->with('error', __('La donación ya estaba anulada.'));
     }
 }

@@ -60,17 +60,18 @@ class DashboardController extends Controller
                 $actividad->push([
                     'tipo' => 'ayuda',
                     'titulo' => $a->beneficiario->nombres.' '.$a->beneficiario->apellidos,
-                    'detalle' => 'Recibió: '.$a->tipoAyuda->nombre,
+                    'detalle' => __('Recibió: :tipo', ['tipo' => $a->tipoAyuda->nombre]),
                     'fecha' => $a->fecha_entrega,
                     'enlace' => route('beneficiarios.show', $a->beneficiario_id),
                 ]);
             }
 
             // Ayudas por mes (últimos 6 meses)
+            $locale = app()->getLocale();
             $meses = [];
             for ($i = 5; $i >= 0; $i--) {
                 $m = now()->startOfMonth()->subMonths($i);
-                $meses[$m->format('Y-m')] = ucfirst($m->locale('es')->isoFormat('MMM'));
+                $meses[$m->format('Y-m')] = ucfirst($m->locale($locale)->isoFormat('MMM'));
             }
             $porMes = AyudaEntregada::where('fecha_entrega', '>=', now()->startOfMonth()->subMonths(5)->toDateString())
                 ->selectRaw("DATE_FORMAT(fecha_entrega,'%Y-%m') as mes, COUNT(*) as total")
@@ -89,10 +90,14 @@ class DashboardController extends Controller
                 ->orderByDesc('fecha_donacion')->orderByDesc('id')->limit(6)->get();
 
             foreach ($ultDonaciones as $d) {
+                $detalle = __('Donó :count producto(s)', ['count' => $d->detalles_count]);
+                if ($d->estaAnulada()) {
+                    $detalle .= ' · ' . __('Anulada');
+                }
                 $actividad->push([
                     'tipo' => 'donacion',
                     'titulo' => $d->donante->nombre_razon_social,
-                    'detalle' => 'Donó '.$d->detalles_count.' producto(s)'.($d->estaAnulada() ? ' · Anulada' : ''),
+                    'detalle' => $detalle,
                     'fecha' => $d->fecha_donacion,
                     'enlace' => route('donaciones.show', $d),
                 ]);
@@ -109,9 +114,14 @@ class DashboardController extends Controller
             $stockBajo = $bajo->orderBy('stock_actual')->limit(5)->get();
         }
 
+        $locale = app()->getLocale();
+        $formatoFecha = $locale === 'en'
+            ? 'dddd, MMMM D, YYYY'
+            : ($locale === 'fr' ? 'dddd D MMMM YYYY' : 'dddd, D [de] MMMM [de] YYYY');
+
         return view('dashboard', [
-            'saludo' => $hoy->hour < 12 ? 'Buenos días' : ($hoy->hour < 19 ? 'Buenas tardes' : 'Buenas noches'),
-            'fecha' => ucfirst($hoy->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')),
+            'saludo' => $hoy->hour < 12 ? __('Buenos días') : ($hoy->hour < 19 ? __('Buenas tardes') : __('Buenas noches')),
+            'fecha' => ucfirst($hoy->locale($locale)->isoFormat($formatoFecha)),
             'primerNombre' => explode(' ', trim($u->name))[0],
             'puede' => $puede,
             'kpi' => $kpi,

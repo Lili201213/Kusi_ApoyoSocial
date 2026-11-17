@@ -1,7 +1,9 @@
 <?php
 
+use App\Events\DonacionRegistrada;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RecuperarClaveController;
+use App\Http\Controllers\Auth\RegistroController;
 use App\Http\Controllers\AyudaEntregadaController;
 use App\Http\Controllers\BeneficiarioController;
 use App\Http\Controllers\CategoriaProductoController;
@@ -10,27 +12,39 @@ use App\Http\Controllers\DonacionController;
 use App\Http\Controllers\DonanteController;
 use App\Http\Controllers\EntregaAlimentoController;
 use App\Http\Controllers\EstadisticaController;
+use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\RespaldoController;
 use App\Http\Controllers\RolController;
+use App\Http\Controllers\TipoAyudaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Middleware\UsuarioActivo;
-use App\Http\Controllers\MovimientoInventarioController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\TipoAyudaController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Controllers\Auth\RegistroController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
 
+// Página pública con WebSockets (sin login, fuera de cualquier grupo)
+Route::get('/publico', function () {
+    return view('publico', ['stats' => DonacionRegistrada::estadisticas()]);
+})->name('publico');
+Route::get('/publico/datos', function () {
+    return response()->json(DonacionRegistrada::estadisticas());
+})->name('publico.datos');
+Route::get('/idioma/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, ['es', 'en', 'fr']), 404);
+    session(['locale' => $locale]);
+    return back();
+})->name('idioma');
 // Autenticación
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-        // Crear cuenta (registro público)
+
+    // Crear cuenta (registro público)
     Route::get('/register', [RegistroController::class, 'create'])->name('register');
     Route::post('/register', [RegistroController::class, 'store'])
         ->middleware('throttle:5,1')->name('register.store');

@@ -6,6 +6,8 @@ use App\Models\Beneficiario;
 use App\Models\NecesidadBeneficiario;
 use App\Models\TipoAyuda;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
+
 
 class BeneficiarioController extends Controller
 {
@@ -46,7 +48,7 @@ class BeneficiarioController extends Controller
         $beneficiario = Beneficiario::create($datos);
 
         return redirect()->route('beneficiarios.show', $beneficiario)
-            ->with('exito', 'Beneficiario registrado correctamente.');
+            ->with('exito', __('Beneficiario registrado correctamente.'));
     }
 
     /** Ficha del beneficiario + RF03 (necesidades) + RF06 (historial) */
@@ -72,7 +74,7 @@ class BeneficiarioController extends Controller
         $beneficiario->update($datos);
 
         return redirect()->route('beneficiarios.show', $beneficiario)
-            ->with('exito', 'Datos actualizados correctamente.');
+            ->with('exito', __('Datos actualizados correctamente.'));
     }
 
     /** RF03: registrar el tipo de ayuda que necesita */
@@ -83,20 +85,20 @@ class BeneficiarioController extends Controller
             'fecha_registro' => ['required', 'date'],
             'observacion' => ['nullable', 'string', 'max:255'],
         ], [
-            'tipo_ayuda_id.required' => 'Selecciona el tipo de ayuda.',
-            'fecha_registro.required' => 'Indica la fecha.',
+            'tipo_ayuda_id.required' => __('Selecciona el tipo de ayuda.'),
+            'fecha_registro.required' => __('Indica la fecha.'),
         ]);
 
         $beneficiario->necesidades()->create($datos + ['estado' => 'pendiente']);
 
-        return back()->with('exito', 'Necesidad registrada.');
+        return back()->with('exito', __('Necesidad registrada.'));
     }
 
     public function atenderNecesidad(NecesidadBeneficiario $necesidad)
     {
         $necesidad->update(['estado' => 'atendida']);
 
-        return back()->with('exito', 'Necesidad marcada como atendida.');
+        return back()->with('exito', __('Necesidad marcada como atendida.'));
     }
 
     /** Eliminar una necesidad registrada */
@@ -104,7 +106,7 @@ class BeneficiarioController extends Controller
     {
         $necesidad->delete();
 
-        return back()->with('exito', 'Necesidad eliminada.');
+        return back()->with('exito', __('Necesidad eliminada.'));
     }
 
     /** Eliminar: solo si no tiene historial. Si lo tiene, se recomienda desactivarlo. */
@@ -114,14 +116,16 @@ class BeneficiarioController extends Controller
         $entregas = $beneficiario->entregasAlimentos()->count();
 
         if ($ayudas + $entregas > 0) {
-            return back()->with('error', "No se puede eliminar: tiene {$ayudas} ayuda(s) y {$entregas} entrega(s) de alimentos registradas. "
-                .'Para conservar su historial, márcalo como inactivo (botón Editar).');
+            return back()->with('error', __('No se puede eliminar: tiene :ayudas ayuda(s) y :entregas entrega(s) de alimentos registradas. Para conservar su historial, márcalo como inactivo (botón Editar).', [
+                'ayudas' => $ayudas,
+                'entregas' => $entregas,
+            ]));
         }
 
         $nombre = $beneficiario->nombres.' '.$beneficiario->apellidos;
         $beneficiario->delete();
 
-        return redirect()->route('beneficiarios.index')->with('exito', "Beneficiario {$nombre} eliminado.");
+        return redirect()->route('beneficiarios.index')->with('exito', __('Beneficiario :nombre eliminado.', ['nombre' => $nombre]));
     }
 
     private function validar(Request $request, ?int $id = null): array
@@ -139,14 +143,14 @@ class BeneficiarioController extends Controller
             'observaciones' => ['nullable', 'string', 'max:2000'],
             'estado' => ['sometimes', 'in:activo,inactivo'],
         ], [
-            'dni.required' => 'El DNI es obligatorio.',
-            'dni.digits' => 'El DNI debe tener exactamente 8 dígitos.',
-            'dni.unique' => 'Ya existe un beneficiario con ese DNI.',
-            'nombres.required' => 'Los nombres son obligatorios.',
-            'apellidos.required' => 'Los apellidos son obligatorios.',
-            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser futura.',
-            'num_familiares.required' => 'Indica el número de familiares.',
-            'num_familiares.min' => 'Debe ser al menos 1.',
+            'dni.required' => __('El DNI es obligatorio.'),
+            'dni.digits' => __('El DNI debe tener exactamente 8 dígitos.'),
+            'dni.unique' => __('Ya existe un beneficiario con ese DNI.'),
+            'nombres.required' => __('Los nombres son obligatorios.'),
+            'apellidos.required' => __('Los apellidos son obligatorios.'),
+            'fecha_nacimiento.before_or_equal' => __('La fecha de nacimiento no puede ser futura.'),
+            'num_familiares.required' => __('Indica el número de familiares.'),
+            'num_familiares.min' => __('Debe ser al menos 1.'),
         ]);
     }
 }

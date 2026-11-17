@@ -58,11 +58,11 @@ class AyudaEntregadaController extends Controller
             'descripcion' => ['nullable', 'string', 'max:255'],
             'observacion' => ['nullable', 'string', 'max:2000'],
         ], [
-            'beneficiario_id.required' => 'Selecciona un beneficiario.',
-            'beneficiario_id.exists' => 'El beneficiario no existe o está inactivo.',
-            'tipo_ayuda_id.required' => 'Selecciona el tipo de ayuda.',
-            'fecha_entrega.required' => 'Indica la fecha de entrega.',
-            'fecha_entrega.before_or_equal' => 'La fecha no puede ser futura.',
+            'beneficiario_id.required' => __('Selecciona un beneficiario.'),
+            'beneficiario_id.exists' => __('El beneficiario no existe o está inactivo.'),
+            'tipo_ayuda_id.required' => __('Selecciona el tipo de ayuda.'),
+            'fecha_entrega.required' => __('Indica la fecha de entrega.'),
+            'fecha_entrega.before_or_equal' => __('La fecha no puede ser futura.'),
         ]);
 
         DB::transaction(function () use ($datos, $request) {
@@ -79,7 +79,7 @@ class AyudaEntregadaController extends Controller
             ? route('beneficiarios.show', $datos['beneficiario_id'])
             : route('ayudas.index');
 
-        return redirect($destino)->with('exito', 'Ayuda registrada correctamente.');
+        return redirect($destino)->with('exito', __('Ayuda registrada correctamente.'));
     }
 
     /** Eliminar una ayuda registrada por error */
@@ -87,6 +87,6 @@ class AyudaEntregadaController extends Controller
     {
         $ayuda->delete();
 
-        return back()->with('exito', 'Registro de ayuda eliminado.');
+        return back()->with('exito', __('Registro de ayuda eliminado.'));
     }
 }

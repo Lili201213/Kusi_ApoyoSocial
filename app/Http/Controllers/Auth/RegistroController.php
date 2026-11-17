@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\NuevaCuentaRegistrada;
 use App\Http\Controllers\Controller;
 use App\Models\Rol;
 use App\Models\User;
@@ -31,7 +32,7 @@ class RegistroController extends Controller
 
         if (empty($idsPermitidos)) {
             return back()->withInput()
-                ->with('error', 'No se pudo crear la cuenta: no hay roles disponibles en el sistema. Avisa al administrador.');
+                ->with('error', __('No se pudo crear la cuenta: no hay roles disponibles en el sistema. Avisa al administrador.'));
         }
 
         $datos = $request->validate([
@@ -42,21 +43,21 @@ class RegistroController extends Controller
             'rol_id' => ['required', Rule::in($idsPermitidos)],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
         ], [
-            'name.required' => 'Ingresa tu nombre completo.',
-            'usuario.required' => 'Elige un nombre de usuario.',
-            'usuario.min' => 'El usuario debe tener al menos 3 caracteres.',
-            'usuario.regex' => 'El usuario solo puede tener letras, números, punto, guion y guion bajo (sin espacios).',
-            'usuario.unique' => 'Ese nombre de usuario ya está en uso.',
-            'email.required' => 'El correo es obligatorio: lo usaremos para verificar tu cuenta.',
-            'email.email' => 'El correo no tiene un formato válido.',
-            'email.unique' => 'Ese correo ya está registrado.',
-            'rol_id.required' => 'Elige el tipo de cuenta.',
-            'rol_id.in' => 'El tipo de cuenta elegido no es válido.',
-            'password.required' => 'Crea una contraseña.',
-            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.letters' => 'La contraseña debe incluir letras.',
-            'password.numbers' => 'La contraseña debe incluir al menos un número.',
+            'name.required' => __('Ingresa tu nombre completo.'),
+            'usuario.required' => __('Elige un nombre de usuario.'),
+            'usuario.min' => __('El usuario debe tener al menos 3 caracteres.'),
+            'usuario.regex' => __('El usuario solo puede tener letras, números, punto, guion y guion bajo (sin espacios).'),
+            'usuario.unique' => __('Ese nombre de usuario ya está en uso.'),
+            'email.required' => __('El correo es obligatorio: lo usaremos para verificar tu cuenta.'),
+            'email.email' => __('El correo no tiene un formato válido.'),
+            'email.unique' => __('Ese correo ya está registrado.'),
+            'rol_id.required' => __('Elige el tipo de cuenta.'),
+            'rol_id.in' => __('El tipo de cuenta elegido no es válido.'),
+            'password.required' => __('Crea una contraseña.'),
+            'password.confirmed' => __('La confirmación de la contraseña no coincide.'),
+            'password.min' => __('La contraseña debe tener al menos 8 caracteres.'),
+            'password.letters' => __('La contraseña debe incluir letras.'),
+            'password.numbers' => __('La contraseña debe incluir al menos un número.'),
         ]);
 
         $usuario = User::create([
@@ -68,6 +69,14 @@ class RegistroController extends Controller
             'rol_id' => (int) $datos['rol_id'],
             'activo' => ! self::REQUIERE_APROBACION,
         ]);
+
+        // Avisa en vivo a los administradores (si el servidor de WebSockets
+        // está apagado, el registro NO debe fallar)
+        try {
+            NuevaCuentaRegistrada::dispatch($usuario);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         // Enlace para verificar el correo
         $falloCorreo = false;
@@ -81,7 +90,7 @@ class RegistroController extends Controller
         // Si hay que esperar aprobación, no inicia sesión todavía
         if (self::REQUIERE_APROBACION) {
             return redirect()->route('login')
-                ->with('exito', 'Tu cuenta fue creada. Un administrador debe activarla antes de que puedas ingresar.');
+                ->with('exito', __('Tu cuenta fue creada. Un administrador debe activarla antes de que puedas ingresar.'));
         }
 
         Auth::login($usuario);
@@ -90,7 +99,7 @@ class RegistroController extends Controller
         $respuesta = redirect()->route('verification.notice');
 
         return $falloCorreo
-            ? $respuesta->with('error', 'Tu cuenta fue creada, pero no se pudo enviar el enlace de verificación. Pulsa "Reenviar enlace".')
+            ? $respuesta->with('error', __('Tu cuenta fue creada, pero no se pudo enviar el enlace de verificación. Pulsa "Reenviar enlace".'))
             : $respuesta->with('status', 'enlace-enviado');
     }
 

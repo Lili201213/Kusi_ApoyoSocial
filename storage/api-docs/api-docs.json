@@ -1,0 +1,192 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API KUSI",
+        "description": "Documentación de la API del sistema KUSI - Sociedad de Apoyo Social",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/kusi/public",
+            "description": "Servidor local"
+        }
+    ],
+    "paths": {
+        "/api/beneficiarios": {
+            "get": {
+                "tags": [
+                    "Beneficiarios"
+                ],
+                "summary": "Lista de beneficiarios (paginada)",
+                "operationId": "ffe3ed4daa21b6d3c86e216a9792b9c6",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista obtenida correctamente"
+                    }
+                }
+            }
+        },
+        "/api/beneficiarios/{id}": {
+            "get": {
+                "tags": [
+                    "Beneficiarios"
+                ],
+                "summary": "Detalle de un beneficiario",
+                "operationId": "ce0871b4b485c104efccba6d7706c68e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del beneficiario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Beneficiario encontrado"
+                    },
+                    "404": {
+                        "description": "No existe"
+                    }
+                }
+            }
+        },
+        "/api/donaciones": {
+            "get": {
+                "tags": [
+                    "Donaciones"
+                ],
+                "summary": "Lista de donaciones (paginada)",
+                "operationId": "aed59bb5d11805947e6088e54b86bbae",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista obtenida correctamente"
+                    }
+                }
+            }
+        },
+        "/api/donaciones/{id}": {
+            "get": {
+                "tags": [
+                    "Donaciones"
+                ],
+                "summary": "Detalle de una donación",
+                "operationId": "561be965a32dafc1bd68a3976c2e8aef",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la donación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Donación encontrada"
+                    },
+                    "404": {
+                        "description": "No existe"
+                    }
+                }
+            }
+        },
+        "/api/productos": {
+            "get": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Inventario de productos (paginado)",
+                "operationId": "786d74243fbf30dace82b25a638113b4",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista obtenida correctamente"
+                    }
+                }
+            }
+        },
+        "/api/productos/{id}": {
+            "get": {
+                "tags": [
+                    "Inventario"
+                ],
+                "summary": "Detalle de un producto",
+                "operationId": "d82fcf54a61b41d79fee46cb397bddab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del producto",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producto encontrado"
+                    },
+                    "404": {
+                        "description": "No existe"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Beneficiarios",
+            "description": "Beneficiarios"
+        },
+        {
+            "name": "Donaciones",
+            "description": "Donaciones"
+        },
+        {
+            "name": "Inventario",
+            "description": "Inventario"
+        }
+    ]
+}

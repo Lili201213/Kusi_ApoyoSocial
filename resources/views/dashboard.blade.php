@@ -40,8 +40,8 @@
     <div>
         <div class="hero-fecha"><i class="bi bi-calendar3 me-1"></i>{{ $fecha }}</div>
         <h1>{{ $saludo }}, {{ $primerNombre }}</h1>
-        <div class="hero-rol">{{ $u->rol->nombre }} · Sociedad de Apoyo Social KUSI</div>
-        <p class="hero-frase">Gracias por acompañar a quienes más lo necesitan. Cada registro cuenta.</p>
+        <div class="hero-rol">{{ $u->rol->nombre }} · {{ __('Sociedad de Apoyo Social KUSI') }}</div>
+        <p class="hero-frase">{{ __('Gracias por acompañar a quienes más lo necesitan. Cada registro cuenta.') }}</p>
     </div>
     <div class="hero-img-wrap"><img src="{{ asset('img/logo-icono.png') }}" alt="KUSI"></div>
 </div>
@@ -55,12 +55,12 @@
             <a href="{{ $enlace }}" class="kpi-card">
                 <div class="kpi-icon {{ $color }}"><i class="bi {{ $icono }}"></i></div>
                 <div class="kpi-num">{{ $valor }}</div>
-                <div class="kpi-label">{{ $etq }}</div>
+                <div class="kpi-label">{{ __($etq) }}</div>
                 @if ($dif !== null)
                     <div class="small mt-1 {{ $dif > 0 ? 'text-success' : ($dif < 0 ? 'text-danger' : 'text-muted') }}">
-                        @if ($dif > 0) <i class="bi bi-caret-up-fill"></i> +{{ $dif }} vs. mes pasado
-                        @elseif ($dif < 0) <i class="bi bi-caret-down-fill"></i> {{ $dif }} vs. mes pasado
-                        @else <i class="bi bi-dash"></i> Igual que el mes pasado
+                        @if ($dif > 0) <i class="bi bi-caret-up-fill"></i> +{{ $dif }} {{ __('vs. mes pasado') }}
+                        @elseif ($dif < 0) <i class="bi bi-caret-down-fill"></i> {{ $dif }} {{ __('vs. mes pasado') }}
+                        @else <i class="bi bi-dash"></i> {{ __('Igual que el mes pasado') }}
                         @endif
                     </div>
                 @endif
@@ -73,11 +73,11 @@
 {{-- Accesos rápidos --}}
 @if ($accesos->isNotEmpty())
 <div class="card shadow-sm mb-4">
-    <div class="card-header"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Accesos rápidos</div>
+    <div class="card-header"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>{{ __('Accesos rápidos') }}</div>
     <div class="card-body">
         <div class="row row-cols-2 row-cols-sm-4 row-cols-xl-4 g-2">
             @foreach ($accesos as [$texto, $icono, $ruta])
-                <div class="col"><a href="{{ $ruta }}" class="tile"><i class="bi {{ $icono }}"></i>{{ $texto }}</a></div>
+                <div class="col"><a href="{{ $ruta }}" class="tile"><i class="bi {{ $icono }}"></i>{{ __($texto) }}</a></div>
             @endforeach
         </div>
     </div>
@@ -89,14 +89,14 @@
     <div class="col-xl-7">
         @if ($serie)
         <div class="card shadow-sm mb-4">
-            <div class="card-header"><i class="bi bi-graph-up-arrow me-1"></i>Ayudas entregadas · últimos 6 meses</div>
+            <div class="card-header"><i class="bi bi-graph-up-arrow me-1"></i>{{ __('Ayudas entregadas · últimos 6 meses') }}</div>
             <div class="card-body"><canvas id="gInicio" height="105"></canvas></div>
         </div>
         @endif
 
         @if ($puede['hist'] || $puede['don'])
         <div class="card shadow-sm">
-            <div class="card-header"><i class="bi bi-clock-history me-1"></i>Actividad reciente</div>
+            <div class="card-header"><i class="bi bi-clock-history me-1"></i>{{ __('Actividad reciente') }}</div>
             @forelse ($actividad as $a)
                 <a href="{{ $a['enlace'] }}" class="lista-item text-decoration-none text-reset">
                     @if ($a['tipo'] === 'ayuda')
@@ -111,7 +111,7 @@
                     <span class="s text-nowrap">{{ $a['fecha']->format('d/m/Y') }}</span>
                 </a>
             @empty
-                <div class="vacio"><i class="bi bi-clock-history"></i>Aún no hay actividad registrada.</div>
+                <div class="vacio"><i class="bi bi-clock-history"></i>{{ __('Aún no hay actividad registrada.') }}</div>
             @endforelse
         </div>
         @endif
@@ -122,7 +122,7 @@
         @if ($puede['benef'])
         <div class="card shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-hourglass-split me-1"></i>Necesidades por atender</span>
+                <span><i class="bi bi-hourglass-split me-1"></i>{{ __('Necesidades por atender') }}</span>
                 <span class="badge text-bg-warning">{{ $kpi['pendientes'] }}</span>
             </div>
             @forelse ($necesidades as $n)
@@ -130,12 +130,12 @@
                     <span class="ini">{{ mb_strtoupper(mb_substr($n->beneficiario->nombres, 0, 1).mb_substr($n->beneficiario->apellidos, 0, 1)) }}</span>
                     <div class="flex-grow-1">
                         <div class="t">{{ $n->beneficiario->nombres }} {{ $n->beneficiario->apellidos }}</div>
-                        <div class="s">Necesita: {{ $n->tipoAyuda->nombre }}</div>
+                        <div class="s">{{ __('Necesita: :tipo', ['tipo' => $n->tipoAyuda->nombre]) }}</div>
                     </div>
                     <span class="s text-nowrap">{{ $n->fecha_registro->format('d/m/Y') }}</span>
                 </a>
             @empty
-                <div class="vacio"><i class="bi bi-emoji-smile"></i>No hay necesidades pendientes. ¡Buen trabajo!</div>
+                <div class="vacio"><i class="bi bi-emoji-smile"></i>{{ __('No hay necesidades pendientes. ¡Buen trabajo!') }}</div>
             @endforelse
         </div>
         @endif
@@ -143,22 +143,22 @@
         @if ($puede['inv'])
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-exclamation-triangle me-1"></i>Productos con stock bajo</span>
+                <span><i class="bi bi-exclamation-triangle me-1"></i>{{ __('Productos con stock bajo') }}</span>
                 <span class="d-flex gap-2 align-items-center">
                     @if ($u->tienePermiso('inventario.entrada'))
-                        <a href="{{ route('movimientos.entrada') }}" class="btn btn-sm btn-outline-primary py-0">Registrar entrada</a>
+                        <a href="{{ route('movimientos.entrada') }}" class="btn btn-sm btn-outline-primary py-0">{{ __('Registrar entrada') }}</a>
                     @endif
-                    <a href="{{ route('productos.index', ['filtro' => 'bajo']) }}" class="small fw-bold text-decoration-none">Ver</a>
+                    <a href="{{ route('productos.index', ['filtro' => 'bajo']) }}" class="small fw-bold text-decoration-none">{{ __('Ver') }}</a>
                 </span>
             </div>
             @forelse ($stockBajo as $p)
                 <a href="{{ route('productos.show', $p) }}" class="lista-item text-decoration-none text-reset">
                     <span class="ini" style="background:#FDE7EA;color:#D6445B"><i class="bi bi-box-seam"></i></span>
-                    <div class="flex-grow-1"><div class="t">{{ $p->nombre }}</div><div class="s">Mínimo: {{ $fmt($p->stock_minimo) }} {{ $p->unidad_medida }}</div></div>
+                    <div class="flex-grow-1"><div class="t">{{ $p->nombre }}</div><div class="s">{{ __('Mínimo: :min :unidad', ['min' => $fmt($p->stock_minimo), 'unidad' => $p->unidad_medida]) }}</div></div>
                     <span class="badge text-bg-danger">{{ $fmt($p->stock_actual) }} {{ $p->unidad_medida }}</span>
                 </a>
             @empty
-                <div class="vacio"><i class="bi bi-check2-circle"></i>Todo el inventario está en niveles normales.</div>
+                <div class="vacio"><i class="bi bi-check2-circle"></i>{{ __('Todo el inventario está en niveles normales.') }}</div>
             @endforelse
         </div>
         @endif

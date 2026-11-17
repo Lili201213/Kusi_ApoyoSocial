@@ -74,13 +74,13 @@ class ProductoController extends Controller
             $producto = Producto::create($datos + ['stock_actual' => 0, 'activo' => true]);
 
             if ($inicial > 0) {
-                $this->inventario->mover($producto->id, 'entrada', $inicial, $request->user()->id, now()->toDateString(), 'Stock inicial');
+                $this->inventario->mover($producto->id, 'entrada', $inicial, $request->user()->id, now()->toDateString(), __('Stock inicial'));
             }
 
             return $producto;
         });
 
-        return redirect()->route('productos.show', $producto)->with('exito', 'Producto registrado correctamente.');
+        return redirect()->route('productos.show', $producto)->with('exito', __('Producto registrado correctamente.'));
     }
 
     public function edit(Producto $producto)
@@ -97,14 +97,14 @@ class ProductoController extends Controller
     {
         $producto->update($this->validar($request, $producto->id));
 
-        return redirect()->route('productos.show', $producto)->with('exito', 'Producto actualizado.');
+        return redirect()->route('productos.show', $producto)->with('exito', __('Producto actualizado.'));
     }
 
     public function cambiarEstado(Producto $producto)
     {
         $producto->update(['activo' => ! $producto->activo]);
 
-        return back()->with('exito', 'Estado actualizado.');
+        return back()->with('exito', __('Estado actualizado.'));
     }
 
     /** Solo si nunca tuvo movimientos ni donaciones */
@@ -113,12 +113,15 @@ class ProductoController extends Controller
         $n = $producto->movimientos()->count() + DetalleDonacion::where('producto_id', $producto->id)->count();
 
         if ($n > 0) {
-            return back()->with('error', "No se puede eliminar «{$producto->nombre}»: tiene {$n} registro(s) de movimientos o donaciones. Puedes desactivarlo.");
+            return back()->with('error', __('No se puede eliminar «:nombre»: tiene :n registro(s) de movimientos o donaciones. Puedes desactivarlo.', [
+                'nombre' => $producto->nombre,
+                'n' => $n,
+            ]));
         }
 
         $producto->delete();
 
-        return redirect()->route('productos.index')->with('exito', 'Producto eliminado.');
+        return redirect()->route('productos.index')->with('exito', __('Producto eliminado.'));
     }
 
     private function validar(Request $request, ?int $id, array $extra = []): array
@@ -130,10 +133,10 @@ class ProductoController extends Controller
             'unidad_medida' => ['required', 'string', 'max:30'],
             'stock_minimo' => ['required', 'numeric', 'min:0', 'max:999999'],
         ] + $extra, [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.unique' => 'Ya existe un producto con ese nombre.',
-            'stock_minimo.required' => 'Indica el stock mínimo (puede ser 0).',
-            'stock_inicial.min' => 'El stock inicial no puede ser negativo.',
+            'nombre.required' => __('El nombre es obligatorio.'),
+            'nombre.unique' => __('Ya existe un producto con ese nombre.'),
+            'stock_minimo.required' => __('Indica el stock mínimo (puede ser 0).'),
+            'stock_inicial.min' => __('El stock inicial no puede ser negativo.'),
         ]);
     }
 }

@@ -66,13 +66,13 @@ class EntregaAlimentoController extends Controller
             'raciones' => ['required', 'integer', 'min:1', 'max:50'],
             'observacion' => ['nullable', 'string', 'max:255'],
         ], [
-            'beneficiario_id.required' => 'Selecciona un beneficiario.',
-            'beneficiario_id.exists' => 'El beneficiario no existe o está inactivo.',
-            'fecha.required' => 'Indica la fecha.',
-            'fecha.before_or_equal' => 'La fecha no puede ser futura.',
-            'tipo_entrega.required' => 'Selecciona el tipo de entrega.',
-            'raciones.required' => 'Indica la cantidad de raciones.',
-            'raciones.min' => 'Debe ser al menos 1.',
+            'beneficiario_id.required' => __('Selecciona un beneficiario.'),
+            'beneficiario_id.exists' => __('El beneficiario no existe o está inactivo.'),
+            'fecha.required' => __('Indica la fecha.'),
+            'fecha.before_or_equal' => __('La fecha no puede ser futura.'),
+            'tipo_entrega.required' => __('Selecciona el tipo de entrega.'),
+            'raciones.required' => __('Indica la cantidad de raciones.'),
+            'raciones.min' => __('Debe ser al menos 1.'),
         ]);
 
         EntregaAlimento::create($datos + ['user_id' => $request->user()->id]);
@@ -81,14 +81,14 @@ class EntregaAlimentoController extends Controller
         if ($request->boolean('otro')) {
             return redirect()->route('alimentos.create')
                 ->withInput($request->only('fecha', 'tipo_entrega', 'raciones'))
-                ->with('exito', 'Entrega registrada. Puedes registrar otra.');
+                ->with('exito', __('Entrega registrada. Puedes registrar otra.'));
         }
 
         $destino = $request->boolean('desde_ficha')
             ? route('beneficiarios.show', $datos['beneficiario_id'])
             : route('alimentos.index');
 
-        return redirect($destino)->with('exito', 'Entrega registrada correctamente.');
+        return redirect($destino)->with('exito', __('Entrega registrada correctamente.'));
     }
 
     /** Eliminar una entrega registrada por error */
@@ -96,6 +96,6 @@ class EntregaAlimentoController extends Controller
     {
         $entrega->delete();
 
-        return back()->with('exito', 'Registro de entrega eliminado.');
+        return back()->with('exito', __('Registro de entrega eliminado.'));
     }
 }

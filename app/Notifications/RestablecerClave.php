@@ -26,7 +26,7 @@ class RestablecerClave extends Notification
         $minutos = config('auth.passwords.'.config('auth.defaults.passwords').'.expire', 60);
 
         return (new MailMessage)
-            ->subject('Restablece tu contraseña - KUSI')
+            ->subject(__('Restablece tu contraseña - KUSI'))
             ->view(['emails.restablecer', 'emails.restablecer-texto'], [
                 'nombre' => $notifiable->name,
                 'usuario' => $notifiable->usuario,

@@ -1,31 +1,31 @@
 <x-layout>
-    <x-slot:title>Ayudas entregadas</x-slot>
+    <x-slot:title>{{ __('Ayudas entregadas') }}</x-slot>
 
 @php $u = auth()->user(); @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h2 class="mb-0">Ayudas entregadas</h2>
+    <h2 class="mb-0">{{ __('Ayudas entregadas') }}</h2>
     @if ($u->tienePermiso('ayudas.crear'))
-        <a href="{{ route('ayudas.create') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Registrar ayuda</a>
+        <a href="{{ route('ayudas.create') }}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>{{ __('Registrar ayuda') }}</a>
     @endif
 </div>
 
 <form method="GET" class="row g-2 mb-3">
     <div class="col-12 col-md-4">
-        <input type="text" name="q" value="{{ $q }}" class="form-control" placeholder="Beneficiario (DNI o nombre)">
+        <input type="text" name="q" value="{{ $q }}" class="form-control" placeholder="{{ __('Beneficiario (DNI o nombre)') }}">
     </div>
     <div class="col-12 col-md-3">
         <select name="tipo_ayuda_id" class="form-select">
-            <option value="">Todos los tipos</option>
+            <option value="">{{ __('Todos los tipos') }}</option>
             @foreach ($tipos as $t)
                 <option value="{{ $t->id }}" @selected(request('tipo_ayuda_id') == $t->id)>{{ $t->nombre }}</option>
             @endforeach
         </select>
     </div>
-    <div class="col-6 col-md-2"><input type="date" name="desde" value="{{ request('desde') }}" class="form-control" title="Desde"></div>
-    <div class="col-6 col-md-2"><input type="date" name="hasta" value="{{ request('hasta') }}" class="form-control" title="Hasta"></div>
+    <div class="col-6 col-md-2"><input type="date" name="desde" value="{{ request('desde') }}" class="form-control" title="{{ __('Desde') }}"></div>
+    <div class="col-6 col-md-2"><input type="date" name="hasta" value="{{ request('hasta') }}" class="form-control" title="{{ __('Hasta') }}"></div>
     <div class="col-12 col-md-1 d-flex gap-1">
-        <button class="btn btn-outline-success flex-fill" title="Buscar"><i class="bi bi-search"></i></button>
-        <a href="{{ route('ayudas.index') }}" class="btn btn-outline-secondary" title="Limpiar"><i class="bi bi-x-lg"></i></a>
+        <button class="btn btn-outline-success flex-fill" title="{{ __('Buscar') }}"><i class="bi bi-search"></i></button>
+        <a href="{{ route('ayudas.index') }}" class="btn btn-outline-secondary" title="{{ __('Limpiar') }}"><i class="bi bi-x-lg"></i></a>
     </div>
 </form>
 
@@ -33,7 +33,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
-                <tr><th>Fecha</th><th>Beneficiario</th><th>Tipo de ayuda</th><th>Descripción</th><th>Registró</th>@if ($u->tienePermiso('ayudas.eliminar'))<th></th>@endif</tr>
+                <tr><th>{{ __('Fecha') }}</th><th>{{ __('Beneficiario') }}</th><th>{{ __('Tipo de ayuda') }}</th><th>{{ __('Descripción') }}</th><th>{{ __('Registró') }}</th>@if ($u->tienePermiso('ayudas.eliminar'))<th></th>@endif</tr>
             </thead>
             <tbody>
             @forelse ($ayudas as $a)
@@ -52,16 +52,16 @@
                     <td class="text-end">
                         @if ($u->tienePermiso('ayudas.eliminar'))
                             <form method="POST" action="{{ route('ayudas.destroy', $a) }}" class="d-inline"
-                                  onsubmit="return confirm('¿Eliminar este registro de ayuda?')">
+                                  onsubmit="return confirm('{{ __('¿Eliminar este registro de ayuda?') }}')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" title="{{ __('Eliminar') }}"><i class="bi bi-trash"></i></button>
                             </form>
                         @endif
                     </td>
                     @endif
                 </tr>
             @empty
-                <tr><td colspan="6" class="text-center text-muted py-4">No hay ayudas registradas con esos filtros.</td></tr>
+                <tr><td colspan="6" class="text-center text-muted py-4">{{ __('No hay ayudas registradas con esos filtros.') }}</td></tr>
             @endforelse
             </tbody>
         </table>

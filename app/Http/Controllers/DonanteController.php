@@ -38,10 +38,10 @@ class DonanteController extends Controller
         Donante::create($this->validar($request));
 
         if ($request->input('volver') === 'donacion') {
-            return redirect()->route('donaciones.create')->with('exito', 'Donante registrado. Ya puedes seleccionarlo.');
+            return redirect()->route('donaciones.create')->with('exito', __('Donante registrado. Ya puedes seleccionarlo.'));
         }
 
-        return redirect()->route('donantes.index')->with('exito', 'Donante registrado correctamente.');
+        return redirect()->route('donantes.index')->with('exito', __('Donante registrado correctamente.'));
     }
 
     public function edit(Donante $donante)
@@ -53,7 +53,7 @@ class DonanteController extends Controller
     {
         $donante->update($this->validar($request, $donante->id));
 
-        return redirect()->route('donantes.index')->with('exito', 'Donante actualizado.');
+        return redirect()->route('donantes.index')->with('exito', __('Donante actualizado.'));
     }
 
     /** Solo si no tiene donaciones */
@@ -62,12 +62,15 @@ class DonanteController extends Controller
         $n = $donante->donaciones()->count();
 
         if ($n > 0) {
-            return back()->with('error', "No se puede eliminar a «{$donante->nombre_razon_social}»: tiene {$n} donación(es) registradas.");
+            return back()->with('error', __('No se puede eliminar a «:nombre»: tiene :n donación(es) registradas.', [
+                'nombre' => $donante->nombre_razon_social,
+                'n' => $n,
+            ]));
         }
 
         $donante->delete();
 
-        return back()->with('exito', 'Donante eliminado.');
+        return back()->with('exito', __('Donante eliminado.'));
     }
 
     private function validar(Request $request, ?int $id = null): array
@@ -80,9 +83,9 @@ class DonanteController extends Controller
             'email' => ['nullable', 'email', 'max:150'],
             'direccion' => ['nullable', 'string', 'max:255'],
         ], [
-            'nombre_razon_social.required' => 'El nombre o razón social es obligatorio.',
-            'documento.unique' => 'Ya existe un donante con ese documento.',
-            'email.email' => 'El correo no tiene un formato válido.',
+            'nombre_razon_social.required' => __('El nombre o razón social es obligatorio.'),
+            'documento.unique' => __('Ya existe un donante con ese documento.'),
+            'email.email' => __('El correo no tiene un formato válido.'),
         ]);
     }
 }

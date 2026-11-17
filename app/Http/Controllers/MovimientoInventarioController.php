@@ -51,12 +51,12 @@ class MovimientoInventarioController extends Controller
             'fecha' => ['required', 'date', 'before_or_equal:today'],
             'motivo' => [$tipo === 'salida' ? 'required' : 'nullable', 'string', 'max:255'],
         ], [
-            'producto_id.required' => 'Selecciona un producto.',
-            'producto_id.exists' => 'El producto no existe o está inactivo.',
-            'cantidad.required' => 'Indica la cantidad.',
-            'cantidad.min' => 'La cantidad debe ser mayor que 0.',
-            'fecha.before_or_equal' => 'La fecha no puede ser futura.',
-            'motivo.required' => 'Indica el motivo de la salida.',
+            'producto_id.required' => __('Selecciona un producto.'),
+            'producto_id.exists' => __('El producto no existe o está inactivo.'),
+            'cantidad.required' => __('Indica la cantidad.'),
+            'cantidad.min' => __('La cantidad debe ser mayor que 0.'),
+            'fecha.before_or_equal' => __('La fecha no puede ser futura.'),
+            'motivo.required' => __('Indica el motivo de la salida.'),
         ]);
 
         try {
@@ -69,6 +69,6 @@ class MovimientoInventarioController extends Controller
         }
 
         return redirect()->route('movimientos.index')
-            ->with('exito', $tipo === 'entrada' ? 'Entrada registrada y stock actualizado.' : 'Salida registrada y stock actualizado.');
+            ->with('exito', $tipo === 'entrada' ? __('Entrada registrada y stock actualizado.') : __('Salida registrada y stock actualizado.'));
     }
 }
