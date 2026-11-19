@@ -1,8 +1,8 @@
 <x-layout>
-    <x-slot:title>Estadísticas</x-slot>
+    <x-slot:title>{{ __('Estadísticas') }}</x-slot>
 
 @php $fmt = fn ($n) => \App\Services\InventarioService::fmt($n); @endphp
-<h2 class="mb-3">Estadísticas</h2>
+<h2 class="mb-3">{{ __('Estadísticas') }}</h2>
 
 <div class="row g-3 mb-4">
     @foreach ([
@@ -17,7 +17,7 @@
     ] as [$etq, $val, $ico, $color])
         <div class="col-6 col-lg-3"><div class="card shadow-sm h-100"><div class="card-body py-3">
             <div class="d-flex justify-content-between align-items-center">
-                <div><div class="text-muted small">{{ $etq }}</div><div class="fs-3 fw-bold">{{ $val }}</div></div>
+                <div><div class="text-muted small">{{ __($etq) }}</div><div class="fs-3 fw-bold">{{ $val }}</div></div>
                 <i class="bi {{ $ico }} fs-2 {{ $color }}"></i>
             </div>
         </div></div></div>
@@ -25,24 +25,24 @@
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-lg-8"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Ayudas entregadas por mes</div>
+    <div class="col-lg-8"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Ayudas entregadas por mes') }}</div>
         <div class="card-body"><canvas id="gAyudas" height="110"></canvas></div></div></div>
-    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Ayudas por tipo</div>
+    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Ayudas por tipo') }}</div>
         <div class="card-body"><canvas id="gTipos"></canvas></div></div></div>
 
-    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Raciones de alimentos por mes</div>
+    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Raciones de alimentos por mes') }}</div>
         <div class="card-body"><canvas id="gRaciones" height="130"></canvas></div></div></div>
-    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Donaciones registradas por mes</div>
+    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Donaciones registradas por mes') }}</div>
         <div class="card-body"><canvas id="gDonaciones" height="130"></canvas></div></div></div>
 
-    <div class="col-lg-8"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Nuevos beneficiarios por mes</div>
+    <div class="col-lg-8"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Nuevos beneficiarios por mes') }}</div>
         <div class="card-body"><canvas id="gBenef" height="110"></canvas></div></div></div>
-    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Beneficiarios por sexo</div>
+    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Beneficiarios por sexo') }}</div>
         <div class="card-body"><canvas id="gSexo"></canvas></div></div></div>
 </div>
 
 <div class="row g-3">
-    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Productos con stock bajo</div>
+    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Productos con stock bajo') }}</div>
         <ul class="list-group list-group-flush">
             @forelse ($stockBajo as $p)
                 <li class="list-group-item d-flex justify-content-between">
@@ -50,23 +50,23 @@
                     <span class="badge text-bg-danger">{{ $fmt($p->stock_actual) }} {{ $p->unidad_medida }}</span>
                 </li>
             @empty
-                <li class="list-group-item text-muted">Todo el stock está en niveles normales.</li>
+                <li class="list-group-item text-muted">{{ __('Todo el stock está en niveles normales.') }}</li>
             @endforelse
         </ul></div></div>
-    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Productos más donados</div>
+    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Productos más donados') }}</div>
         <ul class="list-group list-group-flush">
             @forelse ($masDonados as $p)
                 <li class="list-group-item d-flex justify-content-between">{{ $p->nombre }}<span class="text-muted">{{ $fmt($p->total) }} {{ $p->unidad }}</span></li>
             @empty
-                <li class="list-group-item text-muted">Aún no hay donaciones.</li>
+                <li class="list-group-item text-muted">{{ __('Aún no hay donaciones.') }}</li>
             @endforelse
         </ul></div></div>
-    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">Donantes más frecuentes</div>
+    <div class="col-lg-4"><div class="card shadow-sm h-100"><div class="card-header fw-semibold">{{ __('Donantes más frecuentes') }}</div>
         <ul class="list-group list-group-flush">
             @forelse ($topDonantes as $d)
                 <li class="list-group-item d-flex justify-content-between">{{ $d->nombre }}<span class="badge text-bg-success">{{ $d->total }}</span></li>
             @empty
-                <li class="list-group-item text-muted">Aún no hay donaciones.</li>
+                <li class="list-group-item text-muted">{{ __('Aún no hay donaciones.') }}</li>
             @endforelse
         </ul></div></div>
 </div>

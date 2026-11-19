@@ -14,11 +14,12 @@ class EstadisticaController extends Controller
     /** RF15: estadísticas de beneficiarios, ayudas, donaciones y productos */
     public function index()
     {
-        // Últimos 12 meses: ['2026-01' => 'ene. 26', ...]
+        // Últimos 12 meses: ['2026-01' => 'ene. 26', ...] (en el idioma activo)
+        $locale = app()->getLocale();
         $meses = [];
         for ($i = 11; $i >= 0; $i--) {
             $m = now()->startOfMonth()->subMonths($i);
-            $meses[$m->format('Y-m')] = $m->locale('es')->isoFormat('MMM YY');
+            $meses[$m->format('Y-m')] = ucfirst($m->locale($locale)->isoFormat('MMM YY'));
         }
         $desde = now()->startOfMonth()->subMonths(11)->toDateString();
         $serie = fn ($coleccion) => array_map(fn ($k) => (int) ($coleccion[$k] ?? 0), array_keys($meses));
@@ -38,7 +39,7 @@ class EstadisticaController extends Controller
             ->groupBy('tipos_ayuda.id', 'tipos_ayuda.nombre')->orderByDesc('total')->get();
 
         $porSexo = Beneficiario::selectRaw('sexo, COUNT(*) as total')->groupBy('sexo')->get()
-            ->map(fn ($f) => ['nombre' => match ($f->sexo) { 'M' => 'Masculino', 'F' => 'Femenino', 'Otro' => 'Otro', default => 'Sin dato' }, 'total' => $f->total]);
+            ->map(fn ($f) => ['nombre' => match ($f->sexo) { 'M' => __('Masculino'), 'F' => __('Femenino'), 'Otro' => __('Otro'), default => __('Sin dato') }, 'total' => $f->total]);
 
         $topDonantes = DB::table('donaciones')
             ->join('donantes', 'donantes.id', '=', 'donaciones.donante_id')

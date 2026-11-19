@@ -1,12 +1,12 @@
-Hola, {{ $nombre }}
+{{ __('Hola, :nombre', ['nombre' => $nombre]) }}
 
-Recibimos una solicitud para restablecer la contraseña de tu usuario "{{ $usuario }}" en el sistema KUSI (Sociedad de Apoyo Social).
+{{ __('Recibimos una solicitud para restablecer la contraseña de tu usuario ":usuario" en el sistema KUSI (Sociedad de Apoyo Social).', ['usuario' => $usuario]) }}
 
-Abre este enlace para elegir una contraseña nueva:
+{{ __('Abre este enlace para elegir una contraseña nueva:') }}
 {{ $url }}
 
-El enlace vence en {{ $minutos }} minutos y solo se puede usar una vez.
+{{ __('El enlace vence en :minutos minutos y solo se puede usar una vez.', ['minutos' => $minutos]) }}
 
-Si tú no pediste este cambio, ignora este mensaje: tu contraseña seguirá igual.
+{{ __('Si tú no pediste este cambio, ignora este mensaje: tu contraseña seguirá igual.') }}
 
-Sociedad de Apoyo Social KUSI
+{{ __('Sociedad de Apoyo Social KUSI') }}

@@ -22,13 +22,13 @@ class TipoAyudaController extends Controller
             'nombre' => ['required', 'string', 'max:100', 'unique:tipos_ayuda,nombre'],
             'descripcion' => ['nullable', 'string', 'max:255'],
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.unique' => 'Ya existe un tipo de ayuda con ese nombre.',
+            'nombre.required' => __('El nombre es obligatorio.'),
+            'nombre.unique' => __('Ya existe un tipo de ayuda con ese nombre.'),
         ]);
 
         TipoAyuda::create($datos + ['activo' => true]);
 
-        return back()->with('exito', 'Tipo de ayuda registrado.');
+        return back()->with('exito', __('Tipo de ayuda registrado.'));
     }
 
     /** Activar / desactivar (no se borra para no perder historial) */
@@ -36,7 +36,7 @@ class TipoAyudaController extends Controller
     {
         $tipoAyuda->update(['activo' => ! $tipoAyuda->activo]);
 
-        return back()->with('exito', 'Estado actualizado.');
+        return back()->with('exito', __('Estado actualizado.'));
     }
 
     /** Eliminar solo si nunca se usó; si se usó, hay que desactivarlo */
@@ -46,12 +46,14 @@ class TipoAyudaController extends Controller
             + NecesidadBeneficiario::where('tipo_ayuda_id', $tipoAyuda->id)->count();
 
         if ($usos > 0) {
-            return back()->with('error', "No se puede eliminar «{$tipoAyuda->nombre}»: está en uso ({$usos} registro(s)). "
-                .'Puedes desactivarlo para que no se ofrezca más.');
+            return back()->with('error', __('No se puede eliminar «:nombre»: está en uso (:usos registro(s)). Puedes desactivarlo para que no se ofrezca más.', [
+                'nombre' => $tipoAyuda->nombre,
+                'usos' => $usos,
+            ]));
         }
 
         $tipoAyuda->delete();
 
-        return back()->with('exito', 'Tipo de ayuda eliminado.');
+        return back()->with('exito', __('Tipo de ayuda eliminado.'));
     }
 }

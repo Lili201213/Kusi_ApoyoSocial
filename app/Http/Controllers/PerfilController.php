@@ -26,10 +26,10 @@ class PerfilController extends Controller
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($u->id)],
             'telefono' => ['nullable', 'string', 'max:20'],
         ], [
-            'name.required' => 'Tu nombre es obligatorio.',
-            'email.required' => 'El correo es obligatorio: se usa para recuperar tu contraseña.',
-            'email.email' => 'El correo no tiene un formato válido.',
-            'email.unique' => 'Ese correo ya está registrado por otro usuario.',
+            'name.required' => __('Tu nombre es obligatorio.'),
+            'email.required' => __('El correo es obligatorio: se usa para recuperar tu contraseña.'),
+            'email.email' => __('El correo no tiene un formato válido.'),
+            'email.unique' => __('Ese correo ya está registrado por otro usuario.'),
         ]);
 
         $cambiaCorreo = $u->email !== $datos['email'];
@@ -52,11 +52,11 @@ class PerfilController extends Controller
             $respuesta = redirect()->route('verification.notice');
 
             return $falloCorreo
-                ? $respuesta->with('error', 'Se guardó tu nuevo correo, pero no se pudo enviar el enlace de verificación. Pulsa "Reenviar enlace".')
+                ? $respuesta->with('error', __('Se guardó tu nuevo correo, pero no se pudo enviar el enlace de verificación. Pulsa "Reenviar enlace".'))
                 : $respuesta->with('status', 'enlace-enviado');
         }
 
-        return redirect()->route('perfil.edit')->with('exito', 'Tus datos fueron actualizados.');
+        return redirect()->route('perfil.edit')->with('exito', __('Tus datos fueron actualizados.'));
     }
 
     public function updateClave(Request $request)
@@ -65,19 +65,19 @@ class PerfilController extends Controller
             'password_actual' => ['required', 'current_password'],
             'password' => ['required', 'confirmed', 'different:password_actual', Password::min(8)->letters()->numbers()],
         ], [
-            'password_actual.required' => 'Ingresa tu contraseña actual.',
-            'password_actual.current_password' => 'La contraseña actual no es correcta.',
-            'password.required' => 'Ingresa la nueva contraseña.',
-            'password.confirmed' => 'La confirmación no coincide.',
-            'password.different' => 'La nueva contraseña debe ser distinta a la actual.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.letters' => 'La contraseña debe incluir letras.',
-            'password.numbers' => 'La contraseña debe incluir al menos un número.',
+            'password_actual.required' => __('Ingresa tu contraseña actual.'),
+            'password_actual.current_password' => __('La contraseña actual no es correcta.'),
+            'password.required' => __('Ingresa la nueva contraseña.'),
+            'password.confirmed' => __('La confirmación no coincide.'),
+            'password.different' => __('La nueva contraseña debe ser distinta a la actual.'),
+            'password.min' => __('La contraseña debe tener al menos 8 caracteres.'),
+            'password.letters' => __('La contraseña debe incluir letras.'),
+            'password.numbers' => __('La contraseña debe incluir al menos un número.'),
         ]);
 
         $request->user()->update(['password' => $request->password]);
 
-        return redirect()->route('perfil.edit')->with('exito', 'Contraseña actualizada correctamente.');
+        return redirect()->route('perfil.edit')->with('exito', __('Contraseña actualizada correctamente.'));
     }
 
     public function updateFoto(Request $request)
@@ -85,10 +85,10 @@ class PerfilController extends Controller
         $request->validate([
             'foto' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
-            'foto.required' => 'Selecciona una imagen.',
-            'foto.image' => 'El archivo debe ser una imagen.',
-            'foto.mimes' => 'La foto debe ser JPG, PNG o WEBP.',
-            'foto.max' => 'La foto no puede pesar más de 2 MB.',
+            'foto.required' => __('Selecciona una imagen.'),
+            'foto.image' => __('El archivo debe ser una imagen.'),
+            'foto.mimes' => __('La foto debe ser JPG, PNG o WEBP.'),
+            'foto.max' => __('La foto no puede pesar más de 2 MB.'),
         ]);
 
         $u = $request->user();
@@ -102,7 +102,7 @@ class PerfilController extends Controller
         $this->borrarArchivo($u);
         $u->update(['foto' => $nombre]);
 
-        return redirect()->route('perfil.edit')->with('exito', 'Tu foto fue actualizada.');
+        return redirect()->route('perfil.edit')->with('exito', __('Tu foto fue actualizada.'));
     }
 
     public function deleteFoto(Request $request)
@@ -111,7 +111,7 @@ class PerfilController extends Controller
         $this->borrarArchivo($u);
         $u->update(['foto' => null]);
 
-        return redirect()->route('perfil.edit')->with('exito', 'Foto eliminada.');
+        return redirect()->route('perfil.edit')->with('exito', __('Foto eliminada.'));
     }
 
     /** Eliminar la propia cuenta (solo Personal y Supervisor) */
@@ -120,13 +120,13 @@ class PerfilController extends Controller
         $u = $request->user();
 
         // Protección en el servidor: aunque alguien fuerce la ruta, el admin no puede
-        abort_unless($u->puedeEliminarCuenta(), 403, 'El administrador no puede eliminar su cuenta.');
+        abort_unless($u->puedeEliminarCuenta(), 403, __('El administrador no puede eliminar su cuenta.'));
 
         $request->validate([
             'password_eliminar' => ['required', 'current_password'],
         ], [
-            'password_eliminar.required' => 'Ingresa tu contraseña para confirmar.',
-            'password_eliminar.current_password' => 'La contraseña no es correcta.',
+            'password_eliminar.required' => __('Ingresa tu contraseña para confirmar.'),
+            'password_eliminar.current_password' => __('La contraseña no es correcta.'),
         ]);
 
         $this->borrarArchivo($u);
@@ -138,7 +138,7 @@ class PerfilController extends Controller
 
         $u->delete(); // borrado lógico: se conservan sus registros históricos
 
-        return redirect()->route('login')->with('exito', 'Tu cuenta fue eliminada correctamente.');
+        return redirect()->route('login')->with('exito', __('Tu cuenta fue eliminada correctamente.'));
     }
 
     private function borrarArchivo(User $u): void

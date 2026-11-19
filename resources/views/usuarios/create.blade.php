@@ -1,14 +1,14 @@
 <x-layout>
-    <x-slot:title>Nuevo usuario</x-slot>
+    <x-slot:title>{{ __('Nuevo usuario') }}</x-slot>
 
-<h2 class="mb-3">Registrar usuario</h2>
+<h2 class="mb-3">{{ __('Registrar usuario') }}</h2>
 <div class="card shadow-sm"><div class="card-body">
     <form method="POST" action="{{ route('usuarios.store') }}" autocomplete="off">
         @csrf
         @include('usuarios._form')
         <div class="mt-4 d-flex gap-2">
-            <button class="btn btn-success"><i class="bi bi-check-lg me-1"></i>Guardar</button>
-            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+            <button class="btn btn-success"><i class="bi bi-check-lg me-1"></i>{{ __('Guardar') }}</button>
+            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary">{{ __('Cancelar') }}</a>
         </div>
     </form>
 </div></div>

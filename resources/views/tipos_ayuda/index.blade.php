@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>Tipos de ayuda</x-slot>
+    <x-slot:title>{{ __('Tipos de ayuda') }}</x-slot>
 
 <h2 class="mb-3">{{ __('Tipos de ayuda') }}</h2>
 

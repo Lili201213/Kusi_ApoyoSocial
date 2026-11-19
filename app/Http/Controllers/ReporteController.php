@@ -94,18 +94,18 @@ class ReporteController extends Controller
             ->limit(self::MAX_FILAS)->get();
 
         return [
-            'titulo' => 'Reporte de beneficiarios',
+            'titulo' => __('Reporte de beneficiarios'),
             'campos' => ['q', 'estado', 'sexo', 'desde', 'hasta'],
-            'columnas' => ['DNI', 'Apellidos y nombres', 'Sexo', 'Edad', 'Teléfono', 'Familiares', 'Estado', 'Registrado'],
+            'columnas' => [__('DNI'), __('Apellidos y nombres'), __('Sexo'), __('Edad'), __('Teléfono'), __('Familiares'), __('Estado'), __('Registrado')],
             'filas' => $datos->map(fn ($b) => [
                 $b->dni, $b->apellidos.', '.$b->nombres, $b->sexo ?: '—',
                 $b->fecha_nacimiento ? $b->fecha_nacimiento->age : '—',
-                $b->telefono ?: '—', $b->num_familiares, ucfirst($b->estado), $b->created_at->format('d/m/Y'),
+                $b->telefono ?: '—', $b->num_familiares, __(ucfirst($b->estado)), $b->created_at->format('d/m/Y'),
             ])->all(),
             'resumen' => [
-                'Total' => $datos->count(),
-                'Activos' => $datos->where('estado', 'activo')->count(),
-                'Inactivos' => $datos->where('estado', 'inactivo')->count(),
+                __('Total') => $datos->count(),
+                __('Activos') => $datos->where('estado', 'activo')->count(),
+                __('Inactivos') => $datos->where('estado', 'inactivo')->count(),
             ],
             'truncado' => $datos->count() >= self::MAX_FILAS,
         ];
@@ -122,17 +122,17 @@ class ReporteController extends Controller
             ->limit(self::MAX_FILAS)->get();
 
         return [
-            'titulo' => 'Reporte de ayudas entregadas',
+            'titulo' => __('Reporte de ayudas entregadas'),
             'campos' => ['q', 'tipo_ayuda', 'desde', 'hasta'],
-            'columnas' => ['Fecha', 'DNI', 'Beneficiario', 'Tipo de ayuda', 'Descripción', 'Registró'],
+            'columnas' => [__('Fecha'), __('DNI'), __('Beneficiario'), __('Tipo de ayuda'), __('Descripción'), __('Registró')],
             'filas' => $datos->map(fn ($a) => [
                 $a->fecha_entrega->format('d/m/Y'), $a->beneficiario->dni,
                 $a->beneficiario->apellidos.', '.$a->beneficiario->nombres,
                 $a->tipoAyuda->nombre, $a->descripcion ?: '—', $a->usuario->name,
             ])->all(),
             'resumen' => [
-                'Ayudas entregadas' => $datos->count(),
-                'Beneficiarios atendidos' => $datos->pluck('beneficiario_id')->unique()->count(),
+                __('Ayudas entregadas') => $datos->count(),
+                __('Beneficiarios atendidos') => $datos->pluck('beneficiario_id')->unique()->count(),
             ],
             'truncado' => $datos->count() >= self::MAX_FILAS,
         ];
@@ -149,18 +149,18 @@ class ReporteController extends Controller
             ->limit(self::MAX_FILAS)->get();
 
         return [
-            'titulo' => 'Reporte de alimentos y almuerzos',
+            'titulo' => __('Reporte de alimentos y almuerzos'),
             'campos' => ['q', 'tipo_entrega', 'desde', 'hasta'],
-            'columnas' => ['Fecha', 'DNI', 'Beneficiario', 'Tipo', 'Raciones', 'Registró'],
+            'columnas' => [__('Fecha'), __('DNI'), __('Beneficiario'), __('Tipo'), __('Raciones'), __('Registró')],
             'filas' => $datos->map(fn ($e) => [
                 $e->fecha->format('d/m/Y'), $e->beneficiario->dni,
                 $e->beneficiario->apellidos.', '.$e->beneficiario->nombres,
-                ucfirst($e->tipo_entrega), $e->raciones, $e->usuario->name,
+                __(ucfirst($e->tipo_entrega)), $e->raciones, $e->usuario->name,
             ])->all(),
             'resumen' => [
-                'Entregas' => $datos->count(),
-                'Raciones' => (int) $datos->sum('raciones'),
-                'Beneficiarios atendidos' => $datos->pluck('beneficiario_id')->unique()->count(),
+                __('Entregas') => $datos->count(),
+                __('Raciones') => (int) $datos->sum('raciones'),
+                __('Beneficiarios atendidos') => $datos->pluck('beneficiario_id')->unique()->count(),
             ],
             'truncado' => $datos->count() >= self::MAX_FILAS,
         ];
@@ -177,17 +177,17 @@ class ReporteController extends Controller
             ->limit(self::MAX_FILAS)->get();
 
         return [
-            'titulo' => 'Reporte de donaciones',
+            'titulo' => __('Reporte de donaciones'),
             'campos' => ['q_donante', 'estado_don', 'desde', 'hasta'],
-            'columnas' => ['N.º', 'Fecha', 'Donante', 'Productos donados', 'Estado', 'Registró'],
+            'columnas' => [__('N.º'), __('Fecha'), __('Donante'), __('Productos donados'), __('Estado'), __('Registró')],
             'filas' => $datos->map(fn ($d) => [
                 '#'.$d->id, $d->fecha_donacion->format('d/m/Y'), $d->donante->nombre_razon_social,
                 $d->detalles->map(fn ($x) => $x->producto->nombre.' ('.InventarioService::fmt($x->cantidad).' '.$x->producto->unidad_medida.')')->implode('; '),
-                $d->estaAnulada() ? 'Anulada' : 'Registrada', $d->usuario->name,
+                $d->estaAnulada() ? __('Anulada') : __('Registrada'), $d->usuario->name,
             ])->all(),
             'resumen' => [
-                'Registradas' => $datos->where('estado', 'registrada')->count(),
-                'Anuladas' => $datos->where('estado', 'anulada')->count(),
+                __('Registradas') => $datos->where('estado', 'registrada')->count(),
+                __('Anuladas') => $datos->where('estado', 'anulada')->count(),
             ],
             'truncado' => $datos->count() >= self::MAX_FILAS,
         ];
@@ -205,17 +205,17 @@ class ReporteController extends Controller
             ->orderBy('nombre')->limit(self::MAX_FILAS)->get();
 
         return [
-            'titulo' => 'Reporte de inventario',
+            'titulo' => __('Reporte de inventario'),
             'campos' => ['categoria', 'stock'],
-            'columnas' => ['Producto', 'Categoría', 'Unidad', 'Stock actual', 'Stock mínimo', 'Situación', 'Estado'],
+            'columnas' => [__('Producto'), __('Categoría'), __('Unidad'), __('Stock actual'), __('Stock mínimo'), __('Situación'), __('Estado')],
             'filas' => $datos->map(fn ($p) => [
                 $p->nombre, $p->categoria->nombre ?? '—', $p->unidad_medida,
                 InventarioService::fmt($p->stock_actual), InventarioService::fmt($p->stock_minimo),
-                $p->stock_bajo ? 'Stock bajo' : 'Normal', $p->activo ? 'Activo' : 'Inactivo',
+                $p->stock_bajo ? __('Stock bajo') : __('Normal'), $p->activo ? __('Activo') : __('Inactivo'),
             ])->all(),
             'resumen' => [
-                'Productos' => $datos->count(),
-                'Con stock bajo' => $datos->filter(fn ($p) => $p->stock_bajo)->count(),
+                __('Productos') => $datos->count(),
+                __('Con stock bajo') => $datos->filter(fn ($p) => $p->stock_bajo)->count(),
             ],
             'truncado' => false,
         ];

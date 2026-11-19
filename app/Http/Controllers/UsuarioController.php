@@ -58,12 +58,12 @@ class UsuarioController extends Controller
             report($e);
 
             return redirect()->route('usuarios.index')
-                ->with('exito', 'Usuario registrado correctamente.')
-                ->with('error', 'No se pudo enviar el correo de verificación a '.$usuario->email.'. Revisa la configuración de correo; el usuario puede pedir el enlace al iniciar sesión.');
+                ->with('exito', __('Usuario registrado correctamente.'))
+                ->with('error', __('No se pudo enviar el correo de verificación a :email. Revisa la configuración de correo; el usuario puede pedir el enlace al iniciar sesión.', ['email' => $usuario->email]));
         }
 
         return redirect()->route('usuarios.index')
-            ->with('exito', 'Usuario registrado correctamente. Se envió un enlace de verificación a '.$usuario->email.'.');
+            ->with('exito', __('Usuario registrado correctamente. Se envió un enlace de verificación a :email.', ['email' => $usuario->email]));
     }
 
     public function edit(Request $request, User $usuario)
@@ -91,7 +91,7 @@ class UsuarioController extends Controller
             && (! $datos['activo'] || (int) $datos['rol_id'] !== self::ROL_ADMIN);
 
         if ($dejaDeSerAdminActivo && $this->adminsActivos($usuario->id) === 0) {
-            return back()->withInput()->with('error', 'No se puede: es el único administrador activo. Primero crea o activa otro administrador.');
+            return back()->withInput()->with('error', __('No se puede: es el único administrador activo. Primero crea o activa otro administrador.'));
         }
 
         if (empty($datos['password'])) {
@@ -118,19 +118,19 @@ class UsuarioController extends Controller
             $respuesta = redirect()->route('verification.notice');
 
             return $falloCorreo
-                ? $respuesta->with('error', 'Se guardó tu nuevo correo, pero no se pudo enviar el enlace. Pulsa "Reenviar enlace".')
+                ? $respuesta->with('error', __('Se guardó tu nuevo correo, pero no se pudo enviar el enlace. Pulsa "Reenviar enlace".'))
                 : $respuesta->with('status', 'enlace-enviado');
         }
 
-        $mensaje = 'Usuario actualizado correctamente.';
+        $mensaje = __('Usuario actualizado correctamente.');
         if ($cambiaCorreo && ! $falloCorreo) {
-            $mensaje .= ' Se envió un enlace de verificación al nuevo correo.';
+            $mensaje .= ' '.__('Se envió un enlace de verificación al nuevo correo.');
         }
 
         $respuesta = redirect()->route('usuarios.index')->with('exito', $mensaje);
 
         if ($falloCorreo) {
-            $respuesta->with('error', 'No se pudo enviar el correo de verificación. Revisa la configuración de correo.');
+            $respuesta->with('error', __('No se pudo enviar el correo de verificación. Revisa la configuración de correo.'));
         }
 
         return $respuesta;
@@ -140,16 +140,16 @@ class UsuarioController extends Controller
     public function cambiarEstado(Request $request, User $usuario)
     {
         if ($usuario->id === $request->user()->id) {
-            return back()->with('error', 'No puedes desactivar tu propio usuario.');
+            return back()->with('error', __('No puedes desactivar tu propio usuario.'));
         }
 
         if ($usuario->activo && $this->esAdminActivo($usuario) && $this->adminsActivos($usuario->id) === 0) {
-            return back()->with('error', 'No se puede desactivar: es el único administrador activo.');
+            return back()->with('error', __('No se puede desactivar: es el único administrador activo.'));
         }
 
         $usuario->update(['activo' => ! $usuario->activo]);
 
-        return back()->with('exito', $usuario->activo ? 'Usuario activado.' : 'Usuario desactivado. Ya no podrá ingresar.');
+        return back()->with('exito', $usuario->activo ? __('Usuario activado.') : __('Usuario desactivado. Ya no podrá ingresar.'));
     }
 
     private function esAdminActivo(User $u): bool
@@ -172,20 +172,20 @@ class UsuarioController extends Controller
             'activo' => ['boolean'],
             'password' => [$id ? 'nullable' : 'required', 'confirmed', Password::min(8)->letters()->numbers()],
         ], [
-            'name.required' => 'El nombre es obligatorio.',
-            'usuario.required' => 'El usuario es obligatorio.',
-            'usuario.min' => 'El usuario debe tener al menos 3 caracteres.',
-            'usuario.regex' => 'El usuario solo puede tener letras, números, punto, guion y guion bajo (sin espacios).',
-            'usuario.unique' => 'Ese nombre de usuario ya está en uso.',
-            'email.required' => 'El correo es obligatorio: se usa para recuperar la contraseña.',
-            'email.email' => 'El correo no tiene un formato válido.',
-            'email.unique' => 'Ese correo ya está registrado.',
-            'rol_id.required' => 'Selecciona un rol.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.letters' => 'La contraseña debe incluir letras.',
-            'password.numbers' => 'La contraseña debe incluir al menos un número.',
+            'name.required' => __('El nombre es obligatorio.'),
+            'usuario.required' => __('El usuario es obligatorio.'),
+            'usuario.min' => __('El usuario debe tener al menos 3 caracteres.'),
+            'usuario.regex' => __('El usuario solo puede tener letras, números, punto, guion y guion bajo (sin espacios).'),
+            'usuario.unique' => __('Ese nombre de usuario ya está en uso.'),
+            'email.required' => __('El correo es obligatorio: se usa para recuperar la contraseña.'),
+            'email.email' => __('El correo no tiene un formato válido.'),
+            'email.unique' => __('Ese correo ya está registrado.'),
+            'rol_id.required' => __('Selecciona un rol.'),
+            'password.required' => __('La contraseña es obligatoria.'),
+            'password.confirmed' => __('La confirmación de la contraseña no coincide.'),
+            'password.min' => __('La contraseña debe tener al menos 8 caracteres.'),
+            'password.letters' => __('La contraseña debe incluir letras.'),
+            'password.numbers' => __('La contraseña debe incluir al menos un número.'),
         ]);
     }
 }

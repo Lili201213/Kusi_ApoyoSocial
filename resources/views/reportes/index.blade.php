@@ -1,5 +1,5 @@
 <x-layout>
-    <x-slot:title>Reportes</x-slot>
+    <x-slot:title>{{ __('Reportes') }}</x-slot>
 
 @php
     $reportes = [
@@ -10,8 +10,8 @@
         ['inventario', 'bi-boxes', 'Inventario', 'Existencias actuales y productos con stock bajo.'],
     ];
 @endphp
-<h2 class="mb-1">Reportes</h2>
-<p class="text-muted">Elige un reporte, filtra lo que necesites y luego imprímelo (o guárdalo como PDF) o expórtalo a Excel.</p>
+<h2 class="mb-1">{{ __('Reportes') }}</h2>
+<p class="text-muted">{{ __('Elige un reporte, filtra lo que necesites y luego imprímelo (o guárdalo como PDF) o expórtalo a Excel.') }}</p>
 
 <div class="row g-3">
     @foreach ($reportes as [$ruta, $icono, $titulo, $desc])
@@ -20,8 +20,8 @@
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-body">
                         <div class="fs-2 text-success"><i class="bi {{ $icono }}"></i></div>
-                        <h5 class="card-title text-dark mt-2">{{ $titulo }}</h5>
-                        <p class="card-text text-muted mb-0">{{ $desc }}</p>
+                        <h5 class="card-title text-dark mt-2">{{ __($titulo) }}</h5>
+                        <p class="card-text text-muted mb-0">{{ __($desc) }}</p>
                     </div>
                 </div>
             </a>

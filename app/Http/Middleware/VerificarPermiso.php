@@ -26,6 +26,6 @@ class VerificarPermiso
             }
         }
 
-        abort(403, 'No tienes permiso para acceder a esta sección.');
+        abort(403, __('No tienes permiso para acceder a esta sección.'));
     }
 }

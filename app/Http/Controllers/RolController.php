@@ -61,6 +61,6 @@ class RolController extends Controller
             }
         });
 
-        return back()->with('exito', 'Permisos actualizados. Los cambios se aplican de inmediato.');
+        return back()->with('exito', __('Permisos actualizados. Los cambios se aplican de inmediato.'));
     }
 }

@@ -19,7 +19,7 @@ class UsuarioActivo
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->withErrors(['usuario' => 'Tu cuenta fue desactivada. Contacta al administrador.']);
+                ->withErrors(['usuario' => __('Tu cuenta fue desactivada. Contacta al administrador.')]);
         }
 
         return $next($request);

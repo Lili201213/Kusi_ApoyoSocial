@@ -19,13 +19,13 @@ class CategoriaProductoController extends Controller
         $datos = $request->validate([
             'nombre' => ['required', 'string', 'max:100', 'unique:categorias_producto,nombre'],
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.unique' => 'Ya existe una categoría con ese nombre.',
+            'nombre.required' => __('El nombre es obligatorio.'),
+            'nombre.unique' => __('Ya existe una categoría con ese nombre.'),
         ]);
 
         CategoriaProducto::create($datos);
 
-        return back()->with('exito', 'Categoría registrada.');
+        return back()->with('exito', __('Categoría registrada.'));
     }
 
     /** Solo si no tiene productos */
@@ -34,11 +34,14 @@ class CategoriaProductoController extends Controller
         $n = $categoria->productos()->count();
 
         if ($n > 0) {
-            return back()->with('error', "No se puede eliminar «{$categoria->nombre}»: tiene {$n} producto(s). Cámbialos de categoría primero.");
+            return back()->with('error', __('No se puede eliminar «:nombre»: tiene :n producto(s). Cámbialos de categoría primero.', [
+                'nombre' => $categoria->nombre,
+                'n' => $n,
+            ]));
         }
 
         $categoria->delete();
 
-        return back()->with('exito', 'Categoría eliminada.');
+        return back()->with('exito', __('Categoría eliminada.'));
     }
 }
