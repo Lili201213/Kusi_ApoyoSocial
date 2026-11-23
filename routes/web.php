@@ -25,7 +25,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('dashboard'));
+Route::get('/', fn () => redirect()->route('publico'));
 
 // Página pública con WebSockets (sin login, fuera de cualquier grupo)
 Route::get('/publico', function () {

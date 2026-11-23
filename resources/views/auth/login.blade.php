@@ -46,6 +46,13 @@
             <a href="{{ route('register') }}" class="fw-bold text-decoration-none">{{ __('Crear cuenta') }}</a>
         </p>
 
+        <div class="text-center mt-3 pt-3 border-top">
+            <a href="{{ route('publico') }}" class="text-decoration-none small text-muted d-inline-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i>
+                <span>{{ __('Ver vista pública KUSI') }}</span>
+            </a>
+        </div>
+
 @push('scripts')
 <script>
     document.getElementById('verClave').addEventListener('click', function () {
