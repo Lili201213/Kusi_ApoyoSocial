@@ -1,0 +1,106 @@
+services:
+  # 1. Aplicación KUSI (PHP 8.2-FPM)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kusi-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=bd_kusi
+      - DB_USERNAME=kusi_user
+      - DB_PASSWORD=kusi_secret
+    networks:
+      - kusi-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 2. Servidor Web Nginx
+  web:
+    image: nginx:alpine
+    container_name: kusi-web
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - kusi-network
+    depends_on:
+      - app
+
+  # 3. Base de Datos MySQL 8.0
+  db:
+    image: mysql:8.0
+    container_name: kusi-db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: bd_kusi
+      MYSQL_USER: kusi_user
+      MYSQL_PASSWORD: kusi_secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    volumes:
+      - kusi-db-data:/var/lib/mysql
+    networks:
+      - kusi-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "kusi_user", "-pkusi_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 4. Servidor de WebSockets (Laravel Reverb para tiempo real)
+  reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kusi-reverb
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - kusi-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 5. Gestor de Base de Datos Visual (phpMyAdmin)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: kusi-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root_secret
+    networks:
+      - kusi-network
+    depends_on:
+      - db
+
+networks:
+  kusi-network:
+    driver: bridge
+
+volumes:
+  kusi-db-data:
+    driver: local
